@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1090054988272",
+    "firebase_url": "https://djsullivan-jrbartone-fp.firebaseio.com",
+    "project_id": "djsullivan-jrbartone-fp",
+    "storage_bucket": "djsullivan-jrbartone-fp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1090054988272:android:2b799bb61a46276a377d35",
+        "android_client_info": {
+          "package_name": "djsullivan_jrbartone.fp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1090054988272-nl1m276kpv028c4fvjss5u47mjlrgra9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHLmae80iKn0ZXDyOYEQsweP40e6iA0ZI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1090054988272-nl1m276kpv028c4fvjss5u47mjlrgra9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
