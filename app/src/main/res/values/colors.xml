@@ -3,4 +3,10 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="goatRed">#e61e1e</color>
+    <color name="goatWhite">#FFFFFF</color>
+    <color name="goatGrey">#C2C0C0</color>
+    <color name="goatWhite_opaque">#8CFFFFFF</color>
+    <color name="goatGrey_opaque">#71C2C0C0</color>
 </resources>

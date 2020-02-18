@@ -20,11 +20,15 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
-    private EditText usernameField;
-    private EditText passwordField;
-    private String username;
-    private String password;
-    private TextView addNewUser;
+    EditText usernameField;
+    EditText passwordField;
+
+    String username;
+    String password;
+
+    TextView addNewUser;
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
         userAuth(username.toLowerCase(), password);
     }
-
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public void userAuth(String username, String password) {
         HashMap<String, Object> users = new HashMap<>();

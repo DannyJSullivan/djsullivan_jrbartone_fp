@@ -8,4 +8,23 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="GoatBooks">
+        <item name="colorPrimary">@color/goatRed</item>
+        <item name="colorPrimaryDark">@color/goatWhite</item>
+        <item name="colorAccent">@color/goatGrey</item>
+        <item name="android:background">@color/goatRed</item>
+        <item name="android:textColor">@color/goatWhite</item>
+        <item name="android:textViewStyle">@color/goatWhite</item>
+        <item name="android:buttonStyle">@android:style/Widget.Button</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
 </resources>
