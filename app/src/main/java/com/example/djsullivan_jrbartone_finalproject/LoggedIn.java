@@ -1,13 +1,16 @@
 package com.example.djsullivan_jrbartone_finalproject;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -21,16 +24,21 @@ public class LoggedIn extends AppCompatActivity {
 
     String bookName;
 
-    FirebaseFirestore db = FirebaseFirestore.getInstance();;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    private ActionBar actionBar;
+
+    String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logged_in);
-        setTheme(R.style.GoatBooks);
+        actionBar=getSupportActionBar();
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#C2C0C0")));
 
         Bundle bundle = getIntent().getExtras();
-        String user = bundle.getString("username");
+        username = bundle.getString("username");
     }
 
     public void searchBook(View view) {
@@ -49,7 +57,7 @@ public class LoggedIn extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()) {
                             for(QueryDocumentSnapshot document: task.getResult()) {
-                                Log.d("YEEEEET", document.getId() + " => " + document.getData());
+                                Log.d("SUCCESS", document.getId() + " => " + document.getData());
                             }
                         }
                         else {
@@ -57,5 +65,11 @@ public class LoggedIn extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    public void addBook(View view) {
+        Intent intent = new Intent(LoggedIn.this, AddBook.class);
+        intent.putExtra("username", username);
+        startActivity(intent);
     }
 }

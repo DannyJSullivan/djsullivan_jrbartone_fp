@@ -1,9 +1,12 @@
 package com.example.djsullivan_jrbartone_finalproject;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -27,10 +30,14 @@ public class CreateNewUser extends AppCompatActivity {
     EditText mPassword;
     EditText mPassword2;
 
+    private ActionBar actionBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_new_user);
+        actionBar=getSupportActionBar();
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#C2C0C0")));
     }
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();

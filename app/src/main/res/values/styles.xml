@@ -8,14 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="GoatBooks">
+    <style name="GoatBooks" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
         <item name="colorPrimary">@color/goatRed</item>
         <item name="colorPrimaryDark">@color/goatWhite</item>
         <item name="colorAccent">@color/goatGrey</item>
         <item name="android:background">@color/goatRed</item>
         <item name="android:textColor">@color/goatWhite</item>
         <item name="android:textViewStyle">@color/goatWhite</item>
-        <item name="android:buttonStyle">@android:style/Widget.Button</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
