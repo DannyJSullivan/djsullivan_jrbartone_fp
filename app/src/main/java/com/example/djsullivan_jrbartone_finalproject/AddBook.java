@@ -177,6 +177,8 @@ public class AddBook extends AppCompatActivity {
                    String author = "";
 
                    try {
+                       //TODO: try and make items into an object, then get array of volume info from that
+
                        JSONObject obj = new JSONObject(queryResult);
                        JSONArray items = obj.getJSONArray("items");
 //                       JSONObject itemsObj = items.toJSONObject();
