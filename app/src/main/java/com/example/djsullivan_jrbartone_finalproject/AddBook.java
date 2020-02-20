@@ -158,6 +158,7 @@ public class AddBook extends AppCompatActivity {
            @Override
            public void run() {
                String query = "https://www.googleapis.com/books/v1/volumes?q=isbn" + isbn;
+               System.out.println("QUERY!!!!!! --> " + query);
                StringBuilder result = new StringBuilder();
 
                try {
@@ -182,26 +183,20 @@ public class AddBook extends AppCompatActivity {
                        JSONObject obj = new JSONObject(queryResult);
                        JSONArray items = obj.getJSONArray("items");
 //                       JSONObject itemsObj = items.toJSONObject();
+//                       JSONObject itemsObj = new JSONObject(items.toString());
 
-                       System.out.println("WHAT HERE?????? --> " + items.get(0));
+                       System.out.println("WHAT HERE?????? --> " + items.toString());
 
-//                       items.
+                       System.out.println("items[0]!!! --> " + items.get(0));
 
-//                       JSONArray vol = items.getJSONArray(0);
+                       JSONObject itemsObj = new JSONObject(items.get(0).toString());
+                       System.out.println("items object!!! --> " + itemsObj.toString());
 
-//                       title = obj["items"][0]["title"];
+//                       title = itemsObj.get("title").toString();
 
-//                       JSONObject items = obj.getJSONObject("items");
-                       System.out.println("ITEMS?????? --> " + items);
+                       //TODO: do the same as above for this, then should be able to get authors and titles!!!!
+//                       System.out.println(itemsObj.getJSONArray("volumeInfo"));
 
-//                       JSONArray vol = items.getJSONArray(0).getJSONArray(4);
-
-//                       System.out.println("volume???? " + vol.toString());
-
-//                       System.out.println(vol);
-//                       System.out.println(items);
-//                       System.out.println("JSON OBJECT!!! --> " + obj);
-//                       System.out.println("ITEMS!!! --> " + obj.get("items"));
                    }
                    catch (JSONException e) {
                        System.out.println("JSON ERROR!!!!");
