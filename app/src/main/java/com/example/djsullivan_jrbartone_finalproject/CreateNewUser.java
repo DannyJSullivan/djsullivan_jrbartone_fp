@@ -32,6 +32,8 @@ public class CreateNewUser extends AppCompatActivity {
 
     private ActionBar actionBar;
 
+    // TODO: SET DOCID TO USERNAME
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

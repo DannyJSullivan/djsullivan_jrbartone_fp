@@ -52,13 +52,17 @@ public class MainActivity extends AppCompatActivity {
         password = passwordField.getText().toString();
 
 //        clearDb();
-
-        userAuth(username.toLowerCase(), password);
+        if(username.equals("") || password.equals("")) {
+            Toast.makeText(getApplicationContext(), "Please enter username and password!", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            userAuth(username.toLowerCase(), password);
+        }
     }
 
     public void userAuth(String username, String password) {
         HashMap<String, Object> users = new HashMap<>();
-
+        // TODO: fix login logic to actually compare elements
         db.collection("users")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -67,9 +71,9 @@ public class MainActivity extends AppCompatActivity {
                         boolean userExists = false;
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-//                                Log.d("Success!", document.getId() + " => " + document.getData());
+                                //                                Log.d("Success!", document.getId() + " => " + document.getData());
                                 users.put(document.getId(), document.getData());
-                                if(document.getData().toString().contains("username=" + username) && document.getData().toString().contains("password=" + password)) {
+                                if (document.getData().toString().contains("username=" + username) && document.getData().toString().contains("password=" + password)) {
                                     userExists = true;
                                 }
                             }
@@ -77,13 +81,12 @@ public class MainActivity extends AppCompatActivity {
                             Log.w("ERROR! Users not got!", "Error getting documents.", task.getException());
                         }
 
-                        if(userExists) {
+                        if (userExists) {
                             Toast.makeText(getApplicationContext(), "Login successful!", Toast.LENGTH_LONG).show();
                             Intent intent = new Intent(MainActivity.this, LoggedIn.class);
                             intent.putExtra("username", username);
                             startActivity(intent);
-                        }
-                        else {
+                        } else {
                             Toast.makeText(getApplicationContext(), "Login failed!", Toast.LENGTH_LONG).show();
                         }
                     }
