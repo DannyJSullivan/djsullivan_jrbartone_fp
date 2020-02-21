@@ -83,6 +83,7 @@ public class AddBook extends AppCompatActivity {
                                 .update("owner", FieldValue.arrayUnion(username));
 
                         Toast.makeText(getApplicationContext(), "Book added!", Toast.LENGTH_SHORT).show();
+                        clearPage();
                     }
                     else {
                         Log.d("FAILURE", "COULD NOT FIND THE DOCUMENT!!!");
@@ -99,6 +100,7 @@ public class AddBook extends AppCompatActivity {
                                 .set(book);
 
                         Toast.makeText(getApplicationContext(), "Book added!", Toast.LENGTH_SHORT).show();
+                        clearPage();
                     }
                 }
                 else {
@@ -222,5 +224,11 @@ public class AddBook extends AppCompatActivity {
     // possibly save with docId of ISBN
     public void scanBarcode(View view) {
         scaNow();
+    }
+
+    public void clearPage() {
+        mTitle.setText("");
+        mAuthor.setText("");
+        mISBN.setText("");
     }
 }
