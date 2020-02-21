@@ -6,6 +6,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -15,6 +16,9 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -40,6 +44,7 @@ public class LoggedIn extends AppCompatActivity {
     private ActionBarDrawerToggle t;
     private NavigationView nv;
     private EditText e;
+    private TableLayout results;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,8 @@ public class LoggedIn extends AppCompatActivity {
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#C2C0C0")));
         Bundle bundle = getIntent().getExtras();
         username = bundle.getString("username");
+        results = findViewById(R.id.tableLayout);
+
 
         e = (EditText) findViewById(R.id.bookSearch_plainText);
         e.setOnKeyListener(new View.OnKeyListener()
@@ -71,17 +78,11 @@ public class LoggedIn extends AppCompatActivity {
             }
         });
 
-
         dl = (DrawerLayout)findViewById(R.id.activity_logged_in);
         t = new ActionBarDrawerToggle(this, dl,R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
         dl.addDrawerListener(t);
         t.syncState();
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
-
         nv = (NavigationView)findViewById(R.id.nv);
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -104,41 +105,45 @@ public class LoggedIn extends AppCompatActivity {
                     default:
                         return true;
                 }
-
-
                 return true;
-
             }
         });
-
-
-
     }
 
     public void searchBook(View view) {
         bookNameField = findViewById(R.id.bookSearch_plainText);
         bookName = bookNameField.getText().toString();
-        bookQuery(bookName);
+        bookQuery(bookName, this);
     }
 
     public void searchBookNoClick() {
         Toast.makeText(LoggedIn.this, "search",Toast.LENGTH_SHORT).show();
-
         bookNameField = findViewById(R.id.bookSearch_plainText);
         bookName = bookNameField.getText().toString();
-        bookQuery(bookName);
+        cleanTable(results);
+        bookQuery(bookName, this);
     }
 
-    public void bookQuery(String bookName) {
+    public void bookQuery(String bookName, Context context) {
         db.collection("books")
-                .whereEqualTo("bookName", bookName)
+                .orderBy("title")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()) {
                             for(QueryDocumentSnapshot document: task.getResult()) {
-                                Log.d("SUCCESS", document.getId() + " => " + document.getData());
+                                if(document.getString("title").toLowerCase().contains(bookName.toLowerCase())) {
+                                    Log.d("SUCCESS", document.getId() + " => " + document.getData());
+                                    TableRow tbrow = new TableRow(context);
+                                    TextView tv = new TextView(context);
+                                    tv.setText(document.getString("title"));
+                                    tbrow.addView(tv);
+                                    results.addView(tbrow);
+
+
+                                }
+
                             }
                         }
                         else {
@@ -158,6 +163,15 @@ public class LoggedIn extends AppCompatActivity {
         Intent intent = new Intent(LoggedIn.this, AddBook.class);
         intent.putExtra("username", username);
         startActivity(intent);
+    }
+    private void cleanTable(TableLayout table) {
+
+        int childCount = table.getChildCount();
+
+        // Remove all rows except the first one
+        if (childCount > 1) {
+            table.removeViews(1, childCount - 1);
+        }
     }
 
     @Override
