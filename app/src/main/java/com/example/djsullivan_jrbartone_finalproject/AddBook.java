@@ -2,19 +2,23 @@ package com.example.djsullivan_jrbartone_finalproject;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -43,6 +47,9 @@ public class AddBook extends AppCompatActivity {
     EditText mAuthor;
     EditText mTitle;
     EditText mISBN;
+    private DrawerLayout dl;
+    private ActionBarDrawerToggle t;
+    private NavigationView nv;
 
     String username;
 
@@ -60,6 +67,46 @@ public class AddBook extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         username = bundle.getString("username");
+
+        dl = (DrawerLayout)findViewById(R.id.activity_add_book);
+        t = new ActionBarDrawerToggle(this, dl,R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+        dl.addDrawerListener(t);
+        t.syncState();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+
+        nv = (NavigationView)findViewById(R.id.nv);
+        nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+
+                switch(id)
+                {
+                    case R.id.home:
+                        goHome();
+                        Toast.makeText(AddBook.this, "Home",Toast.LENGTH_SHORT).show();break;
+                    case R.id.settings:
+                        Toast.makeText(AddBook.this, "Settings",Toast.LENGTH_SHORT).show();break;
+                    case R.id.profile:
+                        Toast.makeText(AddBook.this, "Profile",Toast.LENGTH_SHORT).show();break;
+                    case R.id.add:
+                        Toast.makeText(AddBook.this, "Add",Toast.LENGTH_SHORT).show();break;
+                    case R.id.req:
+                        Toast.makeText(AddBook.this, "Trade",Toast.LENGTH_SHORT).show();break;
+                    default:
+                        return true;
+                }
+
+
+                return true;
+
+            }
+        });
+
     }
 
     public void addBook(View view) {
@@ -109,6 +156,7 @@ public class AddBook extends AppCompatActivity {
             }
         });
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -230,5 +278,23 @@ public class AddBook extends AppCompatActivity {
         mTitle.setText("");
         mAuthor.setText("");
         mISBN.setText("");
+    }
+
+    public void goHome() {
+        Intent intent = new Intent(AddBook.this, LoggedIn.class);
+        intent.putExtra("username", username);
+        startActivity(intent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (t.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle your other action bar items...
+
+        return super.onOptionsItemSelected(item);
     }
 }

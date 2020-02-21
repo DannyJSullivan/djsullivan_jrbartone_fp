@@ -90,6 +90,8 @@ public class LoggedIn extends AppCompatActivity {
 
                 switch(id)
                 {
+                    case R.id.home:
+                        Toast.makeText(LoggedIn.this, "Home",Toast.LENGTH_SHORT).show();break;
                     case R.id.settings:
                         Toast.makeText(LoggedIn.this, "Settings",Toast.LENGTH_SHORT).show();break;
                     case R.id.profile:

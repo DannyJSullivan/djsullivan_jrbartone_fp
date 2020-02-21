@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -39,13 +40,51 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        usernameField = findViewById(R.id.usernameField);
+        passwordField = findViewById(R.id.passwordField);
         actionBar=getSupportActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#C2C0C0")));
 
         addNewUser = findViewById(R.id.createAccountText);
+
+        passwordField.setOnKeyListener(new View.OnKeyListener()
+        {
+            public boolean onKey(View v, int keyCode, KeyEvent event)
+            {
+                if (event.getAction() == KeyEvent.ACTION_DOWN)
+                {
+                    switch (keyCode)
+                    {
+                        case KeyEvent.KEYCODE_DPAD_CENTER:
+                        case KeyEvent.KEYCODE_ENTER:
+                            loginAttemptNoClick();
+                            return true;
+                        default:
+                            break;
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     public void loginAttempt(View view) {
+        usernameField = findViewById(R.id.usernameField);
+        passwordField = findViewById(R.id.passwordField);
+        username = usernameField.getText().toString();
+        password = passwordField.getText().toString();
+
+//        clearDb();
+        if(username.equals("") || password.equals("")) {
+            Toast.makeText(getApplicationContext(), "Please enter username and password!", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            userAuth(username.toLowerCase(), password);
+        }
+    }
+
+    public void loginAttemptNoClick() {
         usernameField = findViewById(R.id.usernameField);
         passwordField = findViewById(R.id.passwordField);
         username = usernameField.getText().toString();

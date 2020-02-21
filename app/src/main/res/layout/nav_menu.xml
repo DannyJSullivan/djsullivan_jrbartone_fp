@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="fill_parent" android:layout_width="fill_parent">
-
+    <item android:id="@+id/home"
+        android:title="Home"
+        android:textColor="#FFFFFF"
+        android:icon="@drawable/ic_home_black_24dp"
+        />
     <item android:id="@+id/settings"
         android:title="Settings"
         android:textColor="#FFFFFF"
@@ -10,18 +14,16 @@
         android:title="My Profile"
         android:textColor="#FFFFFF"
 
-        android:icon="@drawable/ic_menu_share"
+        android:icon="@drawable/ic_account_box_black_24dp"
         />
     <item android:id="@+id/add"
         android:title="Add a Book"
         android:textColor="#FFFFFF"
-
-        android:icon="@drawable/ic_menu_gallery"
+        android:icon="@drawable/book_24dp"
         />
     <item android:id="@+id/req"
         android:title="Trade a Book"
         android:textColor="#FFFFFF"
-
         android:icon="@drawable/ic_menu_send"
         />
 
