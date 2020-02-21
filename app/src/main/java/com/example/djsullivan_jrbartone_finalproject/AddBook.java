@@ -2,10 +2,8 @@ package com.example.djsullivan_jrbartone_finalproject;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -20,10 +18,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.local.QueryResult;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -125,25 +119,6 @@ public class AddBook extends AppCompatActivity {
                 String isbn = result.getContents();
                 Log.d("ISBN", isbn);
                 getBookInfo(isbn);
-
-//                try {
-//                    Log.d("GETS HERE", "TRYING TO GET JSON!!!!!");
-//                    JSONObject json = new JSONObject(bookInfo);
-//                    JSONArray items = json.getJSONArray("items");
-////                    JSONArray authors = json.getJSONArray("authors");
-//
-//                    for(int i = 0; i < items.length(); i++) {
-//                        final JSONObject object = items.getJSONObject(i);
-//
-//                    }
-//
-//                    Log.d("TITLE ------>", items.toString());
-//
-//                }
-//                catch (JSONException e) {
-//                    Log.d("ERROR", "JSON DOESN'T WORK!!!");
-//                    e.printStackTrace();
-//                }
             }
         }
         else{
@@ -152,6 +127,8 @@ public class AddBook extends AppCompatActivity {
     }
 
     String queryResult = "";
+    String title = "";
+    String author = "";
 
     public void getBookInfo(String isbn) {
         Thread thread = new Thread(new Runnable() {
@@ -174,29 +151,30 @@ public class AddBook extends AppCompatActivity {
                    Log.d("GOOGLE BOOKS RESULT", result.toString());
 
                    queryResult = result.toString();
-                   String title = "";
-                   String author = "";
 
                    try {
-                       //TODO: try and make items into an object, then get array of volume info from that
-
                        JSONObject obj = new JSONObject(queryResult);
                        JSONArray items = obj.getJSONArray("items");
-//                       JSONObject itemsObj = items.toJSONObject();
-//                       JSONObject itemsObj = new JSONObject(items.toString());
-
-                       System.out.println("WHAT HERE?????? --> " + items.toString());
-
-                       System.out.println("items[0]!!! --> " + items.get(0));
 
                        JSONObject itemsObj = new JSONObject(items.get(0).toString());
-                       System.out.println("items object!!! --> " + itemsObj.toString());
 
-//                       title = itemsObj.get("title").toString();
+                       JSONObject volumeInfo = new JSONObject(itemsObj.get("volumeInfo").toString());
 
-                       //TODO: do the same as above for this, then should be able to get authors and titles!!!!
-//                       System.out.println(itemsObj.getJSONArray("volumeInfo"));
+                       title = volumeInfo.getString("title");
 
+                       JSONArray authors = volumeInfo.getJSONArray("authors");
+                       System.out.println("THESE ARE THE AUTHROS!!! --> " + authors);
+                       if(authors.length() > 1) {
+                           for(int i = 0; i < authors.length(); i++) {
+                                author += authors.get(i).toString();
+                           }
+                       }
+                       else if(authors.length() == 1) {
+                           author = authors.get(0).toString();
+                       }
+                       else {
+                           author = "No author found!";
+                       }
                    }
                    catch (JSONException e) {
                        System.out.println("JSON ERROR!!!!");
@@ -212,25 +190,22 @@ public class AddBook extends AppCompatActivity {
            }
         });
 
+        // start looking up book, and wait until search is finished
         thread.start();
+        try {
+            thread.join();
+        }
+        catch(InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        String title = "";
-        String author = "";
-
-//        try {
-//            JSONObject json = new JSONObject(queryResult);
-//            String items = (String) json.get("items");
-//            Log.d("JSON RETURNED!!!", items);
-//        }
-//        catch (JSONException e) {
-//            e.printStackTrace();
-//            Log.d("JSON EXCEPTION!", e.toString());
-//        }
+        String[] result = new String[2];
+        result[0] = title;
+        result[1] = author;
 
         mTitle.setText(title);
         mAuthor.setText(author);
         mISBN.setText(isbn);
-//        return queryResult;
     }
 
     public void scaNow(){
@@ -238,7 +213,7 @@ public class AddBook extends AppCompatActivity {
         integrator.setCaptureActivity(Portrait.class);
         integrator.setOrientationLocked(false);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
-        integrator.setPrompt("Scan Your Barcode");
+        integrator.setPrompt("Scan your book's barcode");
         integrator.initiateScan();
     }
 
