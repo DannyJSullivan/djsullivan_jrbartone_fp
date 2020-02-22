@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.FirebaseAppLifecycleListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -114,9 +116,14 @@ public class MyProfile extends AppCompatActivity {
                                 if(document.get("owner").toString().contains(username)) { // add filter here to exclude books owned by you
                                     Log.d("SUCCESS", document.getId() + " => " + document.getData());
                                     TableRow tbrow = new TableRow(context);
+                                    TableRow.LayoutParams trlp = new TableRow.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                    tbrow.setLayoutParams(trlp);
                                     TextView tv = new TextView(context);
                                     tv.setText(padAndTrim(document.getString("title")));
                                     tv.setTextSize(20);
+                                    tv.setLayoutParams(new TableRow.LayoutParams(
+                                            TableRow.LayoutParams.MATCH_PARENT,
+                                            TableRow.LayoutParams.MATCH_PARENT, 0.9f));
                                     tbrow.addView(tv);
                                     ImageButton link = new ImageButton(context);
                                     link.setImageDrawable(getResources().getDrawable(R.drawable.ic_menu_share));
@@ -126,7 +133,10 @@ public class MyProfile extends AppCompatActivity {
                                             Toast.makeText(MyProfile.this, "Book link",Toast.LENGTH_SHORT).show();
                                         }
                                     });
+
                                     tbrow.addView(link);
+                                    ((TableRow.MarginLayoutParams) link.getLayoutParams()).rightMargin = 16;
+
                                     results.addView(tbrow);
                                 }
                             }

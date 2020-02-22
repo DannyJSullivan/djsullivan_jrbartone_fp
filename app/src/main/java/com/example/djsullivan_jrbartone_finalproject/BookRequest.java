@@ -167,9 +167,16 @@ public class BookRequest extends AppCompatActivity {
                                             + " wants "
                                             + document.get("isbn").toString() + "      ");
                                     tv.setTextSize(20);
+                                    tv.setLayoutParams(new TableRow.LayoutParams(
+                                            TableRow.LayoutParams.MATCH_PARENT,
+                                            TableRow.LayoutParams.MATCH_PARENT, 0.8f));
                                     tbrow.addView(tv);
                                     tbrow.addView(accept);
                                     tbrow.addView(deny);
+                                    ((TableRow.MarginLayoutParams) accept.getLayoutParams()).rightMargin = 16;
+
+                                    ((TableRow.MarginLayoutParams) deny.getLayoutParams()).rightMargin = 16;
+
                                     tbrow.setClickable(true);
                                     incoming.addView(tbrow);
                                 }
