@@ -33,6 +33,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.model.Document;
 
+import java.security.spec.ECField;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ public class BookRequest extends AppCompatActivity {
     private ActionBarDrawerToggle t;
     private NavigationView nv;
     private EditText e;
+    String title = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,20 +118,22 @@ public class BookRequest extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task.getResult()) {
 //                                Log.d("Success!", document.getId() + " => " + document.getData());
                                 if (document.getId().contains(username + "_")) {
+                                    isbnToTitle(document.get("isbn").toString());
                                     requestsFrom.add(document.get("isbn").toString());
                                     System.out.println("REQUESTS SENT!!! --> " + document.getId());
                                     TableRow tbrow = new TableRow(context);
                                     TextView tv = new TextView(context);
                                     tv.setText("Asking " +
-                                            document.getId().toString().substring(document.getId().toString().indexOf("_"),document.getId().toString().length() - 1)
+                                            document.getId().toString().substring(document.getId().toString().indexOf("_") + 1,document.getId().toString().length() - 1)
                                             + " for "
-                                            + document.get("isbn").toString());
+                                            +  padAndTrim(title));
                                     tv.setTextSize(20);
                                     tbrow.addView(tv);
                                     tbrow.setClickable(true);
                                     sent.addView(tbrow);
 
                                 } else if (document.getId().contains("_" + username)) {
+                                    isbnToTitle(document.get("isbn").toString());
                                     requestsTo.add(document.get("isbn").toString());
                                     System.out.println("REQUEST TO!!! --> " + document.getId());
                                     requestsFrom.add(document.get("isbn").toString());
@@ -165,7 +169,7 @@ public class BookRequest extends AppCompatActivity {
                                     tv.setText(
                                             document.getId().toString().substring(0,document.getId().toString().indexOf("_"))
                                             + " wants "
-                                            + document.get("isbn").toString() + "      ");
+                                            + padAndTrim(title) + "      ");
                                     tv.setTextSize(20);
                                     tv.setLayoutParams(new TableRow.LayoutParams(
                                             TableRow.LayoutParams.MATCH_PARENT,
@@ -185,6 +189,15 @@ public class BookRequest extends AppCompatActivity {
                     }
                 });
     }
+
+    public String padAndTrim(String s){
+        int len = 30;
+        if(s.length() > len){
+            s = s.substring(0,len - 3) + "...";
+        }
+        return s;
+    }
+
 
     public void myProfile() {
         Intent intent = new Intent(BookRequest.this, MyProfile.class);
@@ -208,6 +221,25 @@ public class BookRequest extends AppCompatActivity {
         Intent intent = new Intent(BookRequest.this, LoggedIn.class);
         intent.putExtra("username", username);
         startActivity(intent);
+    }
+
+
+    public void isbnToTitle(String isbn){
+        db.collection("books")
+                .whereEqualTo("isbn", isbn)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                title = document.get("title").toString();
+                            }
+                        } else {
+                            Log.d("FUCK", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
     }
 
 
