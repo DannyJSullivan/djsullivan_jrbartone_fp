@@ -44,14 +44,12 @@ public class LoggedIn extends AppCompatActivity {
     private ActionBar actionBar;
 
     String username;
-    String usernameTo;
 
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
     private NavigationView nv;
     private EditText e;
     private TableLayout results;
-    private String selectedListElement;
     private HashMap<String, Boolean> highlightedItems = new HashMap<String, Boolean>();
 
     @Override
