@@ -102,6 +102,7 @@ public class LoggedIn extends AppCompatActivity {
                     case R.id.settings:
                         Toast.makeText(LoggedIn.this, "Settings",Toast.LENGTH_SHORT).show();break;
                     case R.id.profile:
+                        myProfile();
                         Toast.makeText(LoggedIn.this, "Profile",Toast.LENGTH_SHORT).show();break;
                     case R.id.add:
                         addBookNoClick();
@@ -197,6 +198,12 @@ public class LoggedIn extends AppCompatActivity {
             s = s.substring(0,len - 3) + "...";
         }
         return s;
+    }
+
+    public void myProfile() {
+        Intent intent = new Intent(LoggedIn.this, MyProfile.class);
+        intent.putExtra("username", username);
+        startActivity(intent);
     }
 
     public void addBook(View view) {

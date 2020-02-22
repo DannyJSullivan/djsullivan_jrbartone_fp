@@ -80,6 +80,7 @@ public class BookRequest extends AppCompatActivity {
                     case R.id.settings:
                         Toast.makeText(BookRequest.this, "Settings",Toast.LENGTH_SHORT).show();break;
                     case R.id.profile:
+                        myProfile();
                         Toast.makeText(BookRequest.this, "Profile",Toast.LENGTH_SHORT).show();break;
                     case R.id.add:
                         addBookNoClick();
@@ -176,6 +177,12 @@ public class BookRequest extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    public void myProfile() {
+        Intent intent = new Intent(BookRequest.this, MyProfile.class);
+        intent.putExtra("username", username);
+        startActivity(intent);
     }
 
     public void requests() {

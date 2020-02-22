@@ -92,6 +92,7 @@ public class AddBook extends AppCompatActivity {
                     case R.id.settings:
                         Toast.makeText(AddBook.this, "Settings",Toast.LENGTH_SHORT).show();break;
                     case R.id.profile:
+                        myProfile();
                         Toast.makeText(AddBook.this, "Profile",Toast.LENGTH_SHORT).show();break;
                     case R.id.add:
                         Toast.makeText(AddBook.this, "Add",Toast.LENGTH_SHORT).show();break;
@@ -289,6 +290,12 @@ public class AddBook extends AppCompatActivity {
 
     public void goHome() {
         Intent intent = new Intent(AddBook.this, LoggedIn.class);
+        intent.putExtra("username", username);
+        startActivity(intent);
+    }
+
+    public void myProfile() {
+        Intent intent = new Intent(AddBook.this, MyProfile.class);
         intent.putExtra("username", username);
         startActivity(intent);
     }
