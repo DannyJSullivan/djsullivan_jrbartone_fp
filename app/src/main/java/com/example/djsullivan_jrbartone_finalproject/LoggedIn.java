@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Context;
@@ -12,10 +13,13 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -27,6 +31,10 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoggedIn extends AppCompatActivity {
 
@@ -45,6 +53,8 @@ public class LoggedIn extends AppCompatActivity {
     private NavigationView nv;
     private EditText e;
     private TableLayout results;
+    private String selectedListElement;
+    private HashMap<String, Boolean> highlightedItems = new HashMap<String, Boolean>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,8 +147,36 @@ public class LoggedIn extends AppCompatActivity {
                                     Log.d("SUCCESS", document.getId() + " => " + document.getData());
                                     TableRow tbrow = new TableRow(context);
                                     TextView tv = new TextView(context);
-                                    tv.setText(document.getString("title"));
+                                    tv.setText(padAndTrim(document.getString("title")));
+                                    tv.setTextSize(20);
                                     tbrow.addView(tv);
+                                    tbrow.setClickable(true);
+                                    int currColor = tv.getCurrentTextColor();
+                                    tbrow.setOnClickListener(new View.OnClickListener() {
+                                        public void onClick(View v) {
+                                            if(tv.getCurrentTextColor()==0xFFFFFFFF){
+                                                tbrow.setBackground(new ColorDrawable(0xC2C0C0));
+                                                tv.setTextColor(currColor);
+                                                highlightedItems.put(tv.getText().toString(),false);
+                                                for (Map.Entry entry: highlightedItems.entrySet()){
+                                                    if(entry.getValue().equals(true)){
+                                                        return;
+                                                    }
+                                                }
+                                                findViewById(R.id.send).setVisibility(View.INVISIBLE);
+                                                Log.d("HILI", "UNHILI");
+
+
+                                            }
+                                            else {
+                                                tbrow.setBackground(new ColorDrawable(0xFFff6d59));
+                                                tv.setTextColor(0xFFFFFFFF);
+                                                findViewById(R.id.send).setVisibility(View.VISIBLE);
+                                                highlightedItems.put(tv.getText().toString(),true);
+                                                Log.d("HILI", "HIHI");
+                                            }
+                                        }
+                                    });
                                     results.addView(tbrow);
 
 
@@ -153,6 +191,15 @@ public class LoggedIn extends AppCompatActivity {
                 });
     }
 
+    public String padAndTrim(String s){
+        int len = 41;
+        s = "  " + s;
+        if(s.length() > len){
+            s = s.substring(0,len - 3) + "...";
+        }
+        return s;
+    }
+
     public void addBook(View view) {
         Intent intent = new Intent(LoggedIn.this, AddBook.class);
         intent.putExtra("username", username);
@@ -165,13 +212,15 @@ public class LoggedIn extends AppCompatActivity {
         startActivity(intent);
     }
     private void cleanTable(TableLayout table) {
-
         int childCount = table.getChildCount();
-
-        // Remove all rows except the first one
         if (childCount > 1) {
             table.removeViews(1, childCount - 1);
         }
+    }
+
+    public void sendBookRequest(String[] ID){
+        Toast.makeText(this,"Book Req ID" + ID, Toast.LENGTH_SHORT).show();
+        //TODO: Contact DB with a request (message) for owners of the book
     }
 
     @Override
