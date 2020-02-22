@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AddBook"></activity>
+        <activity android:name=".BookRequest"></activity>
+        <activity android:name=".AddBook" />
         <activity android:name=".CreateNewUser" />
         <activity android:name=".LoggedIn" />
         <activity android:name=".MainActivity">
@@ -22,11 +23,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Portrait"
+        <activity
+            android:name=".Portrait"
             android:screenOrientation="fullSensor"
             android:stateNotNeeded="true"
-            android:windowSoftInputMode="stateAlwaysHidden">
-        </activity>
+            android:windowSoftInputMode="stateAlwaysHidden"></activity>
     </application>
 
 </manifest>

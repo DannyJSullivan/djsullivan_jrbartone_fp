@@ -96,6 +96,7 @@ public class AddBook extends AppCompatActivity {
                     case R.id.add:
                         Toast.makeText(AddBook.this, "Add",Toast.LENGTH_SHORT).show();break;
                     case R.id.req:
+                        requests();
                         Toast.makeText(AddBook.this, "Trade",Toast.LENGTH_SHORT).show();break;
                     default:
                         return true;
@@ -216,7 +217,13 @@ public class AddBook extends AppCompatActivity {
                        System.out.println("THESE ARE THE AUTHROS!!! --> " + authors);
                        if(authors.length() > 1) {
                            for(int i = 0; i < authors.length(); i++) {
-                                author += authors.get(i).toString();
+                               if(i == authors.length() - 1) {
+                                   author += authors.get(i).toString();
+                               }
+                               else {
+                                   author += authors.get(i).toString();
+                                   author += ", ";
+                               }
                            }
                        }
                        else if(authors.length() == 1) {
@@ -282,6 +289,13 @@ public class AddBook extends AppCompatActivity {
 
     public void goHome() {
         Intent intent = new Intent(AddBook.this, LoggedIn.class);
+        intent.putExtra("username", username);
+        startActivity(intent);
+    }
+
+
+    public void requests() {
+        Intent intent = new Intent(AddBook.this, BookRequest.class);
         intent.putExtra("username", username);
         startActivity(intent);
     }

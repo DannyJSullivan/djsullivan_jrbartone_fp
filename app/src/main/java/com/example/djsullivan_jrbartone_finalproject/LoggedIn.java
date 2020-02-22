@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Context;
@@ -13,13 +12,10 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -28,12 +24,13 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class LoggedIn extends AppCompatActivity {
@@ -47,6 +44,7 @@ public class LoggedIn extends AppCompatActivity {
     private ActionBar actionBar;
 
     String username;
+    String usernameTo;
 
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
@@ -111,6 +109,7 @@ public class LoggedIn extends AppCompatActivity {
                         addBookNoClick();
                         Toast.makeText(LoggedIn.this, "Add",Toast.LENGTH_SHORT).show();break;
                     case R.id.req:
+                        requests();
                         Toast.makeText(LoggedIn.this, "Trade",Toast.LENGTH_SHORT).show();break;
                     default:
                         return true;
@@ -134,6 +133,7 @@ public class LoggedIn extends AppCompatActivity {
         bookQuery(bookName, this);
     }
 
+    //TODO: EXCLUDE BOOKS OWNED BY YOU
     public void bookQuery(String bookName, Context context) {
         db.collection("books")
                 .orderBy("title")
@@ -143,7 +143,8 @@ public class LoggedIn extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()) {
                             for(QueryDocumentSnapshot document: task.getResult()) {
-                                if(document.getString("title").toLowerCase().contains(bookName.toLowerCase())) {
+                                if(document.getString("title").toLowerCase().contains(bookName.toLowerCase()) && !document.get("owner").toString().contains(username)) { // add filter here to exclude books owned by you
+
                                     Log.d("SUCCESS", document.getId() + " => " + document.getData());
                                     TableRow tbrow = new TableRow(context);
                                     TextView tv = new TextView(context);
@@ -157,7 +158,7 @@ public class LoggedIn extends AppCompatActivity {
                                             if(tv.getCurrentTextColor()==0xFFFFFFFF){
                                                 tbrow.setBackground(new ColorDrawable(0xC2C0C0));
                                                 tv.setTextColor(currColor);
-                                                highlightedItems.put(tv.getText().toString(),false);
+                                                highlightedItems.put(document.getId(),false);
                                                 for (Map.Entry entry: highlightedItems.entrySet()){
                                                     if(entry.getValue().equals(true)){
                                                         return;
@@ -172,7 +173,7 @@ public class LoggedIn extends AppCompatActivity {
                                                 tbrow.setBackground(new ColorDrawable(0xFFff6d59));
                                                 tv.setTextColor(0xFFFFFFFF);
                                                 findViewById(R.id.send).setVisibility(View.VISIBLE);
-                                                highlightedItems.put(tv.getText().toString(),true);
+                                                highlightedItems.put(document.getId(),true);
                                                 Log.d("HILI", "HIHI");
                                             }
                                         }
@@ -206,11 +207,18 @@ public class LoggedIn extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void requests() {
+        Intent intent = new Intent(LoggedIn.this, BookRequest.class);
+        intent.putExtra("username", username);
+        startActivity(intent);
+    }
+
     public void addBookNoClick() {
         Intent intent = new Intent(LoggedIn.this, AddBook.class);
         intent.putExtra("username", username);
         startActivity(intent);
     }
+
     private void cleanTable(TableLayout table) {
         int childCount = table.getChildCount();
         if (childCount > 1) {
@@ -233,5 +241,34 @@ public class LoggedIn extends AppCompatActivity {
         // Handle your other action bar items...
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void createRequest(View view) {
+        Map<String, Object> obj = new HashMap<>();
+
+        for(String isbn: highlightedItems.keySet()) {
+            obj.put("isbn", isbn);
+
+            db.collection("books").document(isbn).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    DocumentSnapshot document = task.getResult();
+                    if(task.isSuccessful()) {
+                        String strOwners = document.get("owner").toString();
+                        String[] cleaned = strOwners.replace("[", "").replace("]", "").replace(" ", "").split(",");
+
+                        for(int i = 0; i < cleaned.length; i++) {
+                            if(username != cleaned[i]) {
+                                db.collection("requests")
+                                        .document(username + "_" + cleaned[i])
+                                        .set(obj);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        Toast.makeText(getApplicationContext(), "Request(s) sent!", Toast.LENGTH_SHORT).show();
     }
 }

@@ -18,11 +18,15 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CreateNewUser extends AppCompatActivity {
@@ -44,54 +48,43 @@ public class CreateNewUser extends AppCompatActivity {
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    boolean userExists = false;
+
     public void addUser(String username, String password) {
         Map<String, Object> user = new HashMap<>();
         user.put("username", username.toLowerCase());
         user.put("password", password);
-//        user.put("firstName", firstName);
-//        user.put("lastName", lastName);
 
         // first check to see if user exists
-        db.collection("users")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        boolean userExists = false;
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                Log.d("Success!", document.getId() + " => " + document.getData());
-                                if(document.getData().toString().contains("username=" + username)) {
-                                    userExists = true;
-                                }
-                            }
-                        } else {
-                            Log.w("ERROR! Users not got!", "Error getting documents.", task.getException());
-                        }
-
-                        if(!userExists) {
-                            db.collection("users")
-                                    .add(user)
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                        @Override
-                                        public void onSuccess(DocumentReference documentReference) {
-                    //                        Log.d("Added user!", "DocumentSnapshot added with ID: " + documentReference.getId());
-                                            Toast.makeText(getApplicationContext(), "Account created!", Toast.LENGTH_SHORT).show();
-                                            toLoginPage();
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.w("ERROR! User not added!", "Error adding document", e);
-                                        }
-                                    });
-                        }
-                        else {
-                            Toast.makeText(getApplicationContext(), "Username already exists! Could not make user!", Toast.LENGTH_SHORT).show();
-                        }
+        db.collection("users").document(username).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if(document.exists()) {
+                        userExists = true;
+                        Toast.makeText(getApplicationContext(), "Username already exists! Could not make user!", Toast.LENGTH_SHORT).show();
+                        clearPage();
                     }
-                });
+                    else {
+                        db.collection("users")
+                                .document(username)
+                                .set(user);
+                        Toast.makeText(getApplicationContext(), "Account created!", Toast.LENGTH_SHORT).show();
+                        toLoginPage();
+                    }
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Error! User not added!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    public void clearPage() {
+        mUsername.setText("");
+        mPassword.setText("");
+        mPassword2.setText("");
     }
 
 
