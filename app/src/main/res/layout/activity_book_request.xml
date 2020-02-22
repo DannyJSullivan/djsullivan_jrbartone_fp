@@ -16,19 +16,17 @@
 
         <TableLayout
             android:id="@+id/sentRequests"
-            android:layout_width="362dp"
+            android:layout_width="0dp"
             android:layout_height="196dp"
             android:layout_margin="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="56dp"
             android:background="@color/goatGrey"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.47"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/loggedInWelcome"
-            app:layout_constraintVertical_bias="0.972">
+            app:layout_constraintStart_toStartOf="parent">
 
             <TableRow
                 android:layout_width="fill_parent"
@@ -45,11 +43,12 @@
             android:text="Book Requests"
             android:textColor="@color/goatWhite"
             android:textSize="36sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/incomingRequests"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.058" />
+            app:layout_constraintVertical_bias="0.265" />
 
         <TextView
             android:id="@+id/incomingRequests_textView"
@@ -59,12 +58,11 @@
             android:text="Incoming Requests"
             android:textColor="@color/goatWhite"
             android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/incomingRequests"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.191" />
+            app:layout_constraintTop_toBottomOf="@+id/loggedInWelcome"
+            app:layout_constraintVertical_bias="0.607" />
 
         <TextView
             android:id="@+id/sentRequests_textView"
@@ -74,28 +72,25 @@
             android:text="Sent Requests"
             android:textColor="@color/goatWhite"
             android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/sentRequests"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.451"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.665" />
+            app:layout_constraintVertical_bias="0.938" />
 
         <TableLayout
             android:id="@+id/incomingRequests"
-            android:layout_width="362dp"
+            android:layout_width="0dp"
             android:layout_height="196dp"
             android:layout_margin="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="56dp"
             android:background="@color/goatGrey"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/sentRequests_textView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.47"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/loggedInWelcome"
-            app:layout_constraintVertical_bias="0.179">
+            app:layout_constraintStart_toStartOf="parent">
 
             <TableRow
                 android:layout_width="fill_parent"

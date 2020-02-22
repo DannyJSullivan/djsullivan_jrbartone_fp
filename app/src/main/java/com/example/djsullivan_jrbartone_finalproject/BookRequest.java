@@ -6,15 +6,22 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,6 +35,7 @@ import com.google.firebase.firestore.model.Document;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class BookRequest extends AppCompatActivity {
 
@@ -67,6 +75,7 @@ public class BookRequest extends AppCompatActivity {
                 switch(id)
                 {
                     case R.id.home:
+                        goHome();
                         Toast.makeText(BookRequest.this, "Home",Toast.LENGTH_SHORT).show();break;
                     case R.id.settings:
                         Toast.makeText(BookRequest.this, "Settings",Toast.LENGTH_SHORT).show();break;
@@ -85,15 +94,17 @@ public class BookRequest extends AppCompatActivity {
             }
         });
 
-        getRequests();
+        getRequests(this);
     }
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // docId in form of usernameFrom_usernameTo
-    public void getRequests() {
+    public void getRequests(Context context) {
         LinkedList<String> requestsFrom = new LinkedList<>();
         LinkedList<String> requestsTo = new LinkedList<>();
+        TableLayout sent = findViewById(R.id.sentRequests);
+        TableLayout incoming = findViewById(R.id.incomingRequests);
 
         db.collection("requests")
                 .get()
@@ -106,9 +117,60 @@ public class BookRequest extends AppCompatActivity {
                                 if (document.getId().contains(username + "_")) {
                                     requestsFrom.add(document.get("isbn").toString());
                                     System.out.println("REQUESTS SENT!!! --> " + document.getId());
+                                    TableRow tbrow = new TableRow(context);
+                                    TextView tv = new TextView(context);
+                                    tv.setText("Asking " +
+                                            document.getId().toString().substring(document.getId().toString().indexOf("_"),document.getId().toString().length() - 1)
+                                            + " for "
+                                            + document.get("isbn").toString());
+                                    tv.setTextSize(20);
+                                    tbrow.addView(tv);
+                                    tbrow.setClickable(true);
+                                    sent.addView(tbrow);
+
                                 } else if (document.getId().contains("_" + username)) {
                                     requestsTo.add(document.get("isbn").toString());
                                     System.out.println("REQUEST TO!!! --> " + document.getId());
+                                    requestsFrom.add(document.get("isbn").toString());
+                                    System.out.println("REQUESTS SENT!!! --> " + document.getId());
+                                    TableRow tbrow = new TableRow(context);
+                                    TextView tv = new TextView(context);
+                                    //TableLayout.LayoutParams tableRowParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT);
+                                    //tbrow.setLayoutParams(tableRowParams);
+                                    ImageButton accept = new ImageButton(context);
+                                    ImageButton deny = new ImageButton(context);
+                                    accept.setImageDrawable(getResources().getDrawable(R.drawable.ic_check_black_24dp));
+                                    deny.setImageDrawable(getResources().getDrawable(R.drawable.ic_close_black_24dp));
+                                    accept.setBackground(new ColorDrawable(0x00000000));
+                                    deny.setBackground(new ColorDrawable(0x00000000));
+                                    accept.setOnClickListener(new View.OnClickListener() {
+                                        public void onClick(View v) {
+                                            Toast.makeText(BookRequest.this, "Req Accepted",Toast.LENGTH_SHORT).show();
+                                            View row = (View) v.getParent();
+                                            ViewGroup container = ((ViewGroup)row.getParent());
+                                            container.removeView(row);
+                                            container.invalidate();
+                                        }
+                                    });
+                                    deny.setOnClickListener(new View.OnClickListener() {
+                                        public void onClick(View v) {
+                                            Toast.makeText(BookRequest.this, "Req Denied",Toast.LENGTH_SHORT).show();
+                                            View row = (View) v.getParent();
+                                            ViewGroup container = ((ViewGroup)row.getParent());
+                                            container.removeView(row);
+                                            container.invalidate();
+                                        }
+                                    });
+                                    tv.setText(
+                                            document.getId().toString().substring(0,document.getId().toString().indexOf("_"))
+                                            + " wants "
+                                            + document.get("isbn").toString() + "      ");
+                                    tv.setTextSize(20);
+                                    tbrow.addView(tv);
+                                    tbrow.addView(accept);
+                                    tbrow.addView(deny);
+                                    tbrow.setClickable(true);
+                                    incoming.addView(tbrow);
                                 }
                             }
                         }
@@ -127,6 +189,13 @@ public class BookRequest extends AppCompatActivity {
         intent.putExtra("username", username);
         startActivity(intent);
     }
+
+    public void goHome() {
+        Intent intent = new Intent(BookRequest.this, LoggedIn.class);
+        intent.putExtra("username", username);
+        startActivity(intent);
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
