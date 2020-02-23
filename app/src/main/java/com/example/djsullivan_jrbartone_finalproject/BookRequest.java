@@ -49,6 +49,10 @@ public class BookRequest extends AppCompatActivity {
     private NavigationView nv;
     private EditText e;
     String title = "";
+    String isbn = "";
+
+    String userFrom = "";
+    String userTo = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,24 +120,39 @@ public class BookRequest extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-//                                Log.d("Success!", document.getId() + " => " + document.getData());
                                 if (document.getId().contains(username + "_")) {
-                                    isbnToTitle(document.get("isbn").toString());
-                                    requestsFrom.add(document.get("isbn").toString());
-                                    System.out.println("REQUESTS SENT!!! --> " + document.getId());
-                                    TableRow tbrow = new TableRow(context);
-                                    TextView tv = new TextView(context);
-                                    tv.setText("Asking " +
-                                            document.getId().toString().substring(document.getId().toString().indexOf("_") + 1,document.getId().toString().length() - 1)
-                                            + " for "
-                                            +  padAndTrim(title));
-                                    tv.setTextSize(20);
-                                    tbrow.addView(tv);
-                                    tbrow.setClickable(true);
-                                    sent.addView(tbrow);
+                                    userFrom = username;
+                                    userTo = document.getId().substring(document.getId().indexOf("_") + 1);
+                                    System.out.println("USER FROM AND TO!!!!!!!!!! --> " + userFrom + " " + userTo);
 
-                                } else if (document.getId().contains("_" + username)) {
-                                    isbnToTitle(document.get("isbn").toString());
+                                    isbn = document.get("isbn").toString();
+                                    db.collection("books").document(isbn).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                            DocumentSnapshot doc = task.getResult();
+                                            title = doc.get("title").toString();
+
+                                            isbnToTitle(document.get("isbn").toString());
+                                            requestsFrom.add(document.get("isbn").toString());
+                                            System.out.println("REQUESTS SENT!!! --> " + document.getId());
+                                            TableRow tbrow = new TableRow(context);
+                                            TextView tv = new TextView(context);
+
+                                            // TODO: WHY IS USERTO A DIFFERENT NAME!!!!
+                                            System.out.println("NAMES!!!!! --> " + "TO: " + userTo + "FROM: " + userFrom);
+
+                                            tv.setText("Asking " + userFrom + " for " + padAndTrim(title));
+                                            tv.setTextSize(20);
+                                            tbrow.addView(tv);
+                                            tbrow.setClickable(true);
+                                            sent.addView(tbrow);
+                                        }
+                                    });
+                                }
+                                else if (document.getId().contains("_" + username)) {
+                                    userFrom = document.getId().substring(0, document.getId().indexOf("_"));
+                                    userTo = username;
+
                                     requestsTo.add(document.get("isbn").toString());
                                     System.out.println("REQUEST TO!!! --> " + document.getId());
                                     requestsFrom.add(document.get("isbn").toString());
@@ -166,23 +185,30 @@ public class BookRequest extends AppCompatActivity {
                                             container.invalidate();
                                         }
                                     });
-                                    tv.setText(
-                                            document.getId().toString().substring(0,document.getId().toString().indexOf("_"))
-                                            + " wants "
-                                            + padAndTrim(title) + "      ");
-                                    tv.setTextSize(20);
-                                    tv.setLayoutParams(new TableRow.LayoutParams(
-                                            TableRow.LayoutParams.MATCH_PARENT,
-                                            TableRow.LayoutParams.MATCH_PARENT, 0.8f));
-                                    tbrow.addView(tv);
-                                    tbrow.addView(accept);
-                                    tbrow.addView(deny);
-                                    ((TableRow.MarginLayoutParams) accept.getLayoutParams()).rightMargin = 16;
 
-                                    ((TableRow.MarginLayoutParams) deny.getLayoutParams()).rightMargin = 16;
+                                    isbn = document.get("isbn").toString();
+                                    db.collection("books").document(isbn).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                            DocumentSnapshot doc = task.getResult();
+                                            title = doc.get("title").toString();
 
-                                    tbrow.setClickable(true);
-                                    incoming.addView(tbrow);
+                                            tv.setText(userFrom + " wants " + padAndTrim(title) + "      ");
+                                            tv.setTextSize(20);
+                                            tv.setLayoutParams(new TableRow.LayoutParams(
+                                                    TableRow.LayoutParams.MATCH_PARENT,
+                                                    TableRow.LayoutParams.MATCH_PARENT, 0.8f));
+                                            tbrow.addView(tv);
+                                            tbrow.addView(accept);
+                                            tbrow.addView(deny);
+                                            ((TableRow.MarginLayoutParams) accept.getLayoutParams()).rightMargin = 16;
+
+                                            ((TableRow.MarginLayoutParams) deny.getLayoutParams()).rightMargin = 16;
+
+                                            tbrow.setClickable(true);
+                                            incoming.addView(tbrow);
+                                        }
+                                    });
                                 }
                             }
                         }
