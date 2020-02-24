@@ -124,29 +124,30 @@ public class BookRequest extends AppCompatActivity {
                                     userFrom = username;
                                     userTo = document.getId().substring(document.getId().indexOf("_") + 1);
                                     System.out.println("USER FROM AND TO!!!!!!!!!! --> " + userFrom + " " + userTo);
-
                                     isbn = document.get("isbn").toString();
                                     db.collection("books").document(isbn).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                             DocumentSnapshot doc = task.getResult();
                                             title = doc.get("title").toString();
-
-                                            isbnToTitle(document.get("isbn").toString());
                                             requestsFrom.add(document.get("isbn").toString());
                                             System.out.println("REQUESTS SENT!!! --> " + document.getId());
+                                            userFrom = username;
+                                            userTo = document.getId().substring(document.getId().indexOf("_") + 1);
                                             TableRow tbrow = new TableRow(context);
                                             TextView tv = new TextView(context);
 
                                             // TODO: WHY IS USERTO A DIFFERENT NAME!!!!
                                             System.out.println("NAMES!!!!! --> " + "TO: " + userTo + "FROM: " + userFrom);
-
-                                            tv.setText("Asking " + userFrom + " for " + padAndTrim(title));
+                                            String line = "Asking " + userTo + " for " + title;
+                                            line = padAndTrim(line);
+                                            tv.setText(line);
                                             tv.setTextSize(20);
                                             tbrow.addView(tv);
                                             tbrow.setClickable(true);
                                             sent.addView(tbrow);
                                         }
+
                                     });
                                 }
                                 else if (document.getId().contains("_" + username)) {
@@ -192,8 +193,10 @@ public class BookRequest extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                             DocumentSnapshot doc = task.getResult();
                                             title = doc.get("title").toString();
-
-                                            tv.setText(userFrom + " wants " + padAndTrim(title) + "      ");
+                                            userFrom = document.getId().substring(0,document.getId().toString().indexOf("_"));
+                                            String line = userFrom + " wants " + title;
+                                            line = padAndTrim(line);
+                                            tv.setText(line);
                                             tv.setTextSize(20);
                                             tv.setLayoutParams(new TableRow.LayoutParams(
                                                     TableRow.LayoutParams.MATCH_PARENT,
@@ -202,9 +205,7 @@ public class BookRequest extends AppCompatActivity {
                                             tbrow.addView(accept);
                                             tbrow.addView(deny);
                                             ((TableRow.MarginLayoutParams) accept.getLayoutParams()).rightMargin = 16;
-
                                             ((TableRow.MarginLayoutParams) deny.getLayoutParams()).rightMargin = 16;
-
                                             tbrow.setClickable(true);
                                             incoming.addView(tbrow);
                                         }
@@ -217,13 +218,13 @@ public class BookRequest extends AppCompatActivity {
     }
 
     public String padAndTrim(String s){
-        int len = 30;
+        s = " " + s;
+        int len = 35;
         if(s.length() > len){
             s = s.substring(0,len - 3) + "...";
         }
         return s;
     }
-
 
     public void myProfile() {
         Intent intent = new Intent(BookRequest.this, MyProfile.class);
