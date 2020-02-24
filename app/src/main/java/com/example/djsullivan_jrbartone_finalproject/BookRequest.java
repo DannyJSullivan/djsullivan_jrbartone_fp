@@ -28,6 +28,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -124,35 +125,34 @@ public class BookRequest extends AppCompatActivity {
                                     userFrom = username;
                                     userTo = document.getId().substring(document.getId().indexOf("_") + 1);
                                     System.out.println("USER FROM AND TO!!!!!!!!!! --> " + userFrom + " " + userTo);
-
                                     isbn = document.get("isbn").toString();
                                     db.collection("books").document(isbn).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                             DocumentSnapshot doc = task.getResult();
-                                            title = doc.get("title").toString();
-
-                                            isbnToTitle(document.get("isbn").toString());
-                                            requestsFrom.add(document.get("isbn").toString());
-                                            System.out.println("REQUESTS SENT!!! --> " + document.getId());
-
-                                            // TODO: WHY IS USERTO A DIFFERENT NAME!!!!
-                                            System.out.println("NAMES!!!!! --> " + "TO: " + userTo + "FROM: " + userFrom);
+                                            if(!doc.get("owner").toString().contains(username)) {
+                                                title = doc.get("title").toString();
+                                                requestsFrom.add(document.get("isbn").toString());
+                                                System.out.println("REQUESTS SENT!!! --> " + document.getId());
+                                                userFrom = username;
+                                                userTo = document.getId().substring(document.getId().indexOf("_") + 1);
+                                                TableRow tbrow = new TableRow(context);
+                                                TextView tv = new TextView(context);
+                                                System.out.println("NAMES!!!!! --> " + "TO: " + userTo + "FROM: " + userFrom);
+                                                String line = "Asking " + userTo + " for " + title;
+                                                line = padAndTrim(line);
+                                                tv.setText(line);
+                                                tv.setTextSize(20);
+                                                tbrow.addView(tv);
+                                                tbrow.setClickable(true);
+                                                sent.addView(tbrow);
+                                            }
                                         }
-
                                     });
-                                    TableRow tbrow = new TableRow(context);
-                                    TextView tv = new TextView(context);
-                                    tv.setText("Asking " + userTo + " for " + padAndTrim(title));
-                                    tv.setTextSize(20);
-                                    tbrow.addView(tv);
-                                    tbrow.setClickable(true);
-                                    sent.addView(tbrow);
                                 }
                                 else if (document.getId().contains("_" + username)) {
                                     userFrom = document.getId().substring(0, document.getId().indexOf("_"));
                                     userTo = username;
-
                                     requestsTo.add(document.get("isbn").toString());
                                     System.out.println("REQUEST TO!!! --> " + document.getId());
                                     requestsFrom.add(document.get("isbn").toString());
@@ -167,11 +167,17 @@ public class BookRequest extends AppCompatActivity {
                                     deny.setImageDrawable(getResources().getDrawable(R.drawable.ic_close_black_24dp));
                                     accept.setBackground(new ColorDrawable(0x00000000));
                                     deny.setBackground(new ColorDrawable(0x00000000));
+                                    //TODO: ONCLICK FOR ACCEPT AND DENY
                                     accept.setOnClickListener(new View.OnClickListener() {
                                         public void onClick(View v) {
                                             Toast.makeText(BookRequest.this, "Req Accepted",Toast.LENGTH_SHORT).show();
                                             View row = (View) v.getParent();
                                             ViewGroup container = ((ViewGroup)row.getParent());
+                                            userFrom = document.getId().substring(0,document.getId().toString().indexOf("_"));
+                                            db.collection("books")
+                                                    .document(isbn)
+                                                    .update("owner", FieldValue.arrayUnion(userFrom));
+                                            db.collection("requests").document(document.getId()).delete();
                                             container.removeView(row);
                                             container.invalidate();
                                         }
@@ -180,6 +186,7 @@ public class BookRequest extends AppCompatActivity {
                                         public void onClick(View v) {
                                             Toast.makeText(BookRequest.this, "Req Denied",Toast.LENGTH_SHORT).show();
                                             View row = (View) v.getParent();
+                                            db.collection("requests").document(document.getId()).delete();
                                             ViewGroup container = ((ViewGroup)row.getParent());
                                             container.removeView(row);
                                             container.invalidate();
@@ -192,8 +199,10 @@ public class BookRequest extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                             DocumentSnapshot doc = task.getResult();
                                             title = doc.get("title").toString();
-
-                                            tv.setText(userFrom + " wants " + padAndTrim(title) + "      ");
+                                            userFrom = document.getId().substring(0,document.getId().toString().indexOf("_"));
+                                            String line = userFrom + " wants " + title;
+                                            line = padAndTrim(line);
+                                            tv.setText(line);
                                             tv.setTextSize(20);
                                             tv.setLayoutParams(new TableRow.LayoutParams(
                                                     TableRow.LayoutParams.MATCH_PARENT,
@@ -202,9 +211,7 @@ public class BookRequest extends AppCompatActivity {
                                             tbrow.addView(accept);
                                             tbrow.addView(deny);
                                             ((TableRow.MarginLayoutParams) accept.getLayoutParams()).rightMargin = 16;
-
                                             ((TableRow.MarginLayoutParams) deny.getLayoutParams()).rightMargin = 16;
-
                                             tbrow.setClickable(true);
                                             incoming.addView(tbrow);
                                         }
@@ -217,13 +224,13 @@ public class BookRequest extends AppCompatActivity {
     }
 
     public String padAndTrim(String s){
-        int len = 30;
+        s = " " + s;
+        int len = 35;
         if(s.length() > len){
             s = s.substring(0,len - 3) + "...";
         }
         return s;
     }
-
 
     public void myProfile() {
         Intent intent = new Intent(BookRequest.this, MyProfile.class);
@@ -248,26 +255,6 @@ public class BookRequest extends AppCompatActivity {
         intent.putExtra("username", username);
         startActivity(intent);
     }
-
-
-    public void isbnToTitle(String isbn){
-        db.collection("books")
-                .whereEqualTo("isbn", isbn)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                title = document.get("title").toString();
-                            }
-                        } else {
-                            Log.d("FUCK", "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
