@@ -132,7 +132,6 @@ public class LoggedIn extends AppCompatActivity {
         bookQuery(bookName, this);
     }
 
-    //TODO: EXCLUDE BOOKS OWNED BY YOU
     public void bookQuery(String bookName, Context context) {
         db.collection("books")
                 .orderBy("title")
@@ -248,6 +247,7 @@ public class LoggedIn extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // TODO: check and see transaction between users already exists, if it does, append a new ending to it (i.e. _1 or &1) upwards until doc doesn't exist and can be added
     public void createRequest(View view) {
         Map<String, Object> obj = new HashMap<>();
 

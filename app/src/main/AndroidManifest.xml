@@ -16,7 +16,7 @@
         <activity android:name=".BookRequest" />
         <activity android:name=".AddBook" />
         <activity android:name=".CreateNewUser" />
-        <activity android:name=".LoggedIn" />
+        <activity android:windowSoftInputMode="adjustPan" android:name=".LoggedIn" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

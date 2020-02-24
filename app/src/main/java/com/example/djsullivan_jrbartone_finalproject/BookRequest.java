@@ -135,19 +135,19 @@ public class BookRequest extends AppCompatActivity {
                                             isbnToTitle(document.get("isbn").toString());
                                             requestsFrom.add(document.get("isbn").toString());
                                             System.out.println("REQUESTS SENT!!! --> " + document.getId());
-                                            TableRow tbrow = new TableRow(context);
-                                            TextView tv = new TextView(context);
 
                                             // TODO: WHY IS USERTO A DIFFERENT NAME!!!!
                                             System.out.println("NAMES!!!!! --> " + "TO: " + userTo + "FROM: " + userFrom);
-
-                                            tv.setText("Asking " + userFrom + " for " + padAndTrim(title));
-                                            tv.setTextSize(20);
-                                            tbrow.addView(tv);
-                                            tbrow.setClickable(true);
-                                            sent.addView(tbrow);
                                         }
+
                                     });
+                                    TableRow tbrow = new TableRow(context);
+                                    TextView tv = new TextView(context);
+                                    tv.setText("Asking " + userTo + " for " + padAndTrim(title));
+                                    tv.setTextSize(20);
+                                    tbrow.addView(tv);
+                                    tbrow.setClickable(true);
+                                    sent.addView(tbrow);
                                 }
                                 else if (document.getId().contains("_" + username)) {
                                     userFrom = document.getId().substring(0, document.getId().indexOf("_"));
