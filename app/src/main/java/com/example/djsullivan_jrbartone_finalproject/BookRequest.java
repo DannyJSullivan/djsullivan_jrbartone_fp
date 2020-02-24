@@ -136,8 +136,6 @@ public class BookRequest extends AppCompatActivity {
                                             userTo = document.getId().substring(document.getId().indexOf("_") + 1);
                                             TableRow tbrow = new TableRow(context);
                                             TextView tv = new TextView(context);
-
-                                            // TODO: WHY IS USERTO A DIFFERENT NAME!!!!
                                             System.out.println("NAMES!!!!! --> " + "TO: " + userTo + "FROM: " + userFrom);
                                             String line = "Asking " + userTo + " for " + title;
                                             line = padAndTrim(line);
@@ -153,7 +151,6 @@ public class BookRequest extends AppCompatActivity {
                                 else if (document.getId().contains("_" + username)) {
                                     userFrom = document.getId().substring(0, document.getId().indexOf("_"));
                                     userTo = username;
-
                                     requestsTo.add(document.get("isbn").toString());
                                     System.out.println("REQUEST TO!!! --> " + document.getId());
                                     requestsFrom.add(document.get("isbn").toString());
@@ -249,26 +246,6 @@ public class BookRequest extends AppCompatActivity {
         intent.putExtra("username", username);
         startActivity(intent);
     }
-
-
-    public void isbnToTitle(String isbn){
-        db.collection("books")
-                .whereEqualTo("isbn", isbn)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                title = document.get("title").toString();
-                            }
-                        } else {
-                            Log.d("FUCK", "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
