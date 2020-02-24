@@ -45,8 +45,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.176" />
 
-        <TableLayout
-            android:id="@+id/tableLayout"
+        <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="0dp"
             android:layout_margin="16dp"
@@ -59,13 +58,31 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/bookSearch_plainText">
+            >
 
-            <TableRow
+            <TableLayout
+                android:id="@+id/tableLayout"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
+                android:layout_height="0dp"
+                android:layout_margin="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@color/goatGrey"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bookSearch_plainText">
+
+                <TableRow
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" />
 
 
-        </TableLayout>
+            </TableLayout>
+
+        </ScrollView>
 
         <Button
             android:id="@+id/send"

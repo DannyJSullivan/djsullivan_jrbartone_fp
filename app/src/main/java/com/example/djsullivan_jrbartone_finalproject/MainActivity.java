@@ -121,12 +121,12 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         if (userExists) {
-                            Toast.makeText(getApplicationContext(), "Login successful!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Login successful!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(MainActivity.this, LoggedIn.class);
                             intent.putExtra("username", username);
                             startActivity(intent);
                         } else {
-                            Toast.makeText(getApplicationContext(), "Login failed!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Login failed!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

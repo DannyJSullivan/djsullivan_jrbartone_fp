@@ -55,6 +55,9 @@ public class BookRequest extends AppCompatActivity {
     String userFrom = "";
     String userTo = "";
 
+    boolean isPdf = false;
+    boolean isOnline = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,6 +111,7 @@ public class BookRequest extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // docId in form of usernameFrom_usernameTo
+    // TODO: if book is not pdf, transfer ownership on accepted request
     public void getRequests(Context context) {
         LinkedList<String> requestsFrom = new LinkedList<>();
         LinkedList<String> requestsTo = new LinkedList<>();
@@ -177,6 +181,14 @@ public class BookRequest extends AppCompatActivity {
                                             db.collection("books")
                                                     .document(isbn)
                                                     .update("owner", FieldValue.arrayUnion(userFrom));
+
+                                            // TODO: if isPdf or isOnline, do not remove ownership, else move ownership
+                                            if(!isOnline && !isPdf) {
+                                                System.out.println("Book is not pdf and is not online. Transferring ownership!");
+                                                db.collection("books")
+                                                        .document(isbn)
+                                                        .update("owner", FieldValue.arrayRemove(userTo));
+                                            }
                                             db.collection("requests").document(document.getId()).delete();
                                             container.removeView(row);
                                             container.invalidate();
@@ -198,6 +210,14 @@ public class BookRequest extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                             DocumentSnapshot doc = task.getResult();
+
+                                            if(doc.get("isPdf").toString().equals("true")) {
+                                                isPdf = true;
+                                            }
+                                            if(doc.get("isOnline").toString().equals("true")) {
+                                                isOnline = true;
+                                            }
+
                                             title = doc.get("title").toString();
                                             userFrom = document.getId().substring(0,document.getId().toString().indexOf("_"));
                                             String line = userFrom + " wants " + title;

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -47,11 +48,18 @@ public class AddBook extends AppCompatActivity {
     EditText mAuthor;
     EditText mTitle;
     EditText mISBN;
+    EditText mURL;
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
     private NavigationView nv;
+    CheckBox mOnline;
+    CheckBox mPdf;
 
     String username;
+    String isbn;
+
+    boolean isOnline;
+    boolean isPdf;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -64,6 +72,9 @@ public class AddBook extends AppCompatActivity {
         mAuthor = findViewById(R.id.bookAuthor_editText);
         mTitle = findViewById(R.id.bookTitle_editText);
         mISBN = findViewById(R.id.bookISBN_editText);
+        mURL = findViewById(R.id.url_editText);
+        mOnline = findViewById(R.id.isOnline_checkbox);
+        mPdf = findViewById(R.id.isPdf_online);
 
         Bundle bundle = getIntent().getExtras();
         username = bundle.getString("username");
@@ -114,49 +125,79 @@ public class AddBook extends AppCompatActivity {
     public void addBook(View view) {
         String author = mAuthor.getText().toString();
         String title = mTitle.getText().toString();
-        String isbn = mISBN.getText().toString();
+        isbn = mISBN.getText().toString();
+        String url = mURL.getText().toString();
+        isOnline = mOnline.isChecked();
+        isPdf = mPdf.isChecked();
+
+        boolean requiredFieldsFilled = false;
+
+        if(!author.equals("") && !title.equals("")) {
+            requiredFieldsFilled = true;
+        }
+
+        if(isbn.equals("")) {
+            String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    + "0123456789"
+                    + "abcdefghijklmnopqrstuvxyz";
+            StringBuilder sb = new StringBuilder(25);
+
+            for (int i = 0; i < 25; i++) {
+                int index = (int)(AlphaNumericString.length() * Math.random());
+                sb.append(AlphaNumericString.charAt(index));
+            }
+
+            isbn = sb.toString();
+        }
 
         // checks if book exists
         // if book exists, adds user as an owner
         // if book does not exist, adds the book
         // TODO: possibly add book to users in booksOwned field?
-        db.collection("books").document(isbn).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if(document.exists()) {
-                        Log.d("SUCCESS", "FOUND THE DOCUMENT!!!!");
-                        db.collection("books")
-                                .document(isbn)
-                                .update("owner", FieldValue.arrayUnion(username));
+        if(requiredFieldsFilled) {
+            db.collection("books").document(isbn).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Log.d("SUCCESS", "FOUND THE DOCUMENT!!!!");
+                            db.collection("books")
+                                    .document(isbn)
+                                    .update("owner", FieldValue.arrayUnion(username));
 
-                        Toast.makeText(getApplicationContext(), "Book added!", Toast.LENGTH_SHORT).show();
-                        clearPage();
-                    }
-                    else {
-                        Log.d("FAILURE", "COULD NOT FIND THE DOCUMENT!!!");
-                        List<String> user = new ArrayList<String>();
-                        user.add(username);
-                        Map<String, Object> book = new HashMap<>();
-                        book.put("author", author);
-                        book.put("owner", user);
-                        book.put("title", title);
-                        book.put("isbn", isbn);
+                            Toast.makeText(getApplicationContext(), "Book added!", Toast.LENGTH_SHORT).show();
+                            clearPage();
+                        } else {
+                            Log.d("FAILURE", "COULD NOT FIND THE DOCUMENT!!!");
+                            List<String> user = new ArrayList<String>();
+                            user.add(username);
+                            Map<String, Object> book = new HashMap<>();
+                            book.put("author", author);
+                            book.put("owner", user);
+                            book.put("title", title);
+                            book.put("isbn", isbn);
+                            book.put("url", url);
+                            book.put("isOnline", isOnline);
+                            book.put("isPdf", isPdf);
 
-                        db.collection("books")
-                                .document(isbn)
-                                .set(book);
 
-                        Toast.makeText(getApplicationContext(), "Book added!", Toast.LENGTH_SHORT).show();
-                        clearPage();
+                            db.collection("books")
+                                    .document(isbn)
+                                    .set(book);
+
+                            Toast.makeText(getApplicationContext(), "Book added!", Toast.LENGTH_SHORT).show();
+                            clearPage();
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Error! Book not added!", Toast.LENGTH_SHORT).show();
                     }
                 }
-                else {
-                    Toast.makeText(getApplicationContext(), "Error! Book not added!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+            });
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "Book not added! Please fill all required fields!", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -275,7 +316,6 @@ public class AddBook extends AppCompatActivity {
         integrator.initiateScan();
     }
 
-    // TODO: functionality to add book/pdf
     // test functionality with camera to scan book, automatically add, add ability to confirm infromation is correct first
     // possibly save with docId of ISBN
     public void scanBarcode(View view) {
@@ -286,6 +326,13 @@ public class AddBook extends AppCompatActivity {
         mTitle.setText("");
         mAuthor.setText("");
         mISBN.setText("");
+        mURL.setText("");
+        if(isPdf) {
+            mPdf.setChecked(false);
+        }
+        if(isOnline) {
+            mOnline.setChecked(false);
+        }
     }
 
     public void goHome() {
