@@ -23,6 +23,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 
+// TODO: add logout function to hamburger menu
+// TODO: make app icon goatbooks logo
+
 public class MainActivity extends AppCompatActivity {
     EditText usernameField;
     EditText passwordField;

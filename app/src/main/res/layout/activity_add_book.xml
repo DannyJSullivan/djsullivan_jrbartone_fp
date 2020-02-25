@@ -33,7 +33,7 @@
         android:id="@+id/bookTitle_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="24dp"
         android:ems="10"
         android:hint="title"
         android:inputType="textPersonName"
@@ -43,6 +43,7 @@
         android:textColorLink="@color/goatRed"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
@@ -104,29 +105,47 @@
         android:id="@+id/addBook_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="52dp"
-        android:onClick="addBook"
-        android:text="Add Book"
+        android:layout_marginTop="10dp"
         android:background="@color/goatRed"
 
         android:elevation="20dp"
+        android:onClick="addBook"
+        android:text="Add Book"
         android:textColor="@color/goatWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/url_editText" />
+        app:layout_constraintTop_toBottomOf="@+id/isPdf_online" />
+
+    <Button
+        android:id="@+id/fillFromIsbn_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/goatRed"
+        android:elevation="20dp"
+
+        android:onClick="fillFromIsbn"
+        android:text="Fill From ISBN"
+        android:textColor="@color/goatWhite"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scanBarcode_button"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/scanBarcode_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:onClick="scanBarcode"
-        android:elevation="20dp"
-        android:textColor="@color/goatWhite"
+        android:layout_marginTop="10dp"
         android:background="@color/goatRed"
-
+        android:elevation="20dp"
+        android:onClick="scanBarcode"
         android:text="Scan Barcode"
+
+        android:textColor="@color/goatWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -136,16 +155,14 @@
         android:id="@+id/isPdf_online"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:text="is a PDF"
+        android:layout_marginTop="8dp"
         android:elevation="20dp"
 
+        android:text="is a PDF"
         android:textColor="@color/goatWhite"
-        app:layout_constraintBottom_toTopOf="@+id/addBook_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/url_editText"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@+id/url_editText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

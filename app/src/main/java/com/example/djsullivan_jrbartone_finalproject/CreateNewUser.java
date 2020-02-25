@@ -33,10 +33,12 @@ public class CreateNewUser extends AppCompatActivity {
     EditText mUsername;
     EditText mPassword;
     EditText mPassword2;
+    EditText mEmail;
 
     private ActionBar actionBar;
 
     //TODO: secureley store & compare passwords
+    // TODO: add email field
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

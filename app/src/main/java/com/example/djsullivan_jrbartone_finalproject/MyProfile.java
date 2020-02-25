@@ -116,6 +116,7 @@ public class MyProfile extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()) {
                             for(QueryDocumentSnapshot document: task.getResult()) {
+                                isPdf = false;
                                 if(document.get("owner").toString().contains(username)) { // add filter here to exclude books owned by you
                                     if(document.get("isPdf") != null && document.get("url") != null) {
                                         if(document.get("isPdf").toString().equals("true")) {

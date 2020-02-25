@@ -63,7 +63,11 @@ public class AddBook extends AppCompatActivity {
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    //TODO: set listener so that if either pdf or online are checked, updated URL to required/omit optional
+    // TODO: set listener so that if pdf is checked, updated URL to required/omit optional
+    // TODO: set listener so that if a link is inserted, isPdf gets checked
+    // TODO: set listener so that if text field is empty or has been deleted, make the variable null string
+    //          comes from the error of deleting authors, then trying to fill from ISBN again
+    //              so on fill ISBN, clear vars
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -262,7 +266,7 @@ public class AddBook extends AppCompatActivity {
                        if(authors.length() > 1) {
                            for(int i = 0; i < authors.length(); i++) {
                                if(i == authors.length() - 1) {
-                                   author += authors.get(i).toString();
+                                   author += " " + authors.get(i).toString();
                                }
                                else {
                                    author += authors.get(i).toString();
@@ -363,5 +367,11 @@ public class AddBook extends AppCompatActivity {
         // Handle your other action bar items...
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void fillFromIsbn(View view) {
+        isbn = mISBN.getText().toString();
+        getBookInfo(isbn);
+
     }
 }

@@ -112,7 +112,7 @@ public class BookRequest extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // docId in form of usernameFrom_usernameTo
-    // TODO: if book is not pdf, transfer ownership on accepted request
+    // TODO: if request accepted, check other documents to see if a user has requests for this book to other owners, then cancel those requests
     public void getRequests(Context context) {
         LinkedList<String> requestsFrom = new LinkedList<>();
         LinkedList<String> requestsTo = new LinkedList<>();
