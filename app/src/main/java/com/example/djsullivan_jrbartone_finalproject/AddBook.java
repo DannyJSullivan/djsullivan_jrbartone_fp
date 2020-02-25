@@ -45,8 +45,6 @@ public class AddBook extends AppCompatActivity {
 
     private ActionBar actionBar;
 
-    EditText mAuthor;
-    EditText mTitle;
     EditText mISBN;
     EditText mURL;
     private DrawerLayout dl;
@@ -57,9 +55,12 @@ public class AddBook extends AppCompatActivity {
 
     String username;
     String isbn;
+    String currTitle;
+    String currAuthor;
+    String currISBN;
 
 //    boolean isOnline;
-    boolean isPdf;
+    boolean isPdf = true;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -74,22 +75,14 @@ public class AddBook extends AppCompatActivity {
         setContentView(R.layout.activity_add_book);
         actionBar=getSupportActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#C2C0C0")));
-        mAuthor = findViewById(R.id.bookAuthor_editText);
-        mTitle = findViewById(R.id.bookTitle_editText);
         mISBN = findViewById(R.id.bookISBN_editText);
         mURL = findViewById(R.id.url_editText);
-//        mOnline = findViewById(R.id.isOnline_checkbox);
-        mPdf = findViewById(R.id.isPdf_online);
-
         Bundle bundle = getIntent().getExtras();
         username = bundle.getString("username");
-
         dl = (DrawerLayout)findViewById(R.id.activity_add_book);
         t = new ActionBarDrawerToggle(this, dl,R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
         dl.addDrawerListener(t);
         t.syncState();
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         nv = (NavigationView)findViewById(R.id.nv);
@@ -116,29 +109,22 @@ public class AddBook extends AppCompatActivity {
                     default:
                         return true;
                 }
-
-
                 return true;
-
             }
         });
-
     }
 
     public void addBook(View view) {
-        String author = mAuthor.getText().toString();
-        String title = mTitle.getText().toString();
         isbn = mISBN.getText().toString();
+        getBookInfo(isbn);
         String url = mURL.getText().toString();
-//        isOnline = mOnline.isChecked();
-        isPdf = mPdf.isChecked();
-
         boolean requiredFieldsFilled = false;
 
-        if(!author.equals("") && !title.equals("")) {
+        if(!author.equals("") && !title.equals("") && !isbn.equals("")) {
             requiredFieldsFilled = true;
         }
 
+        /*
         if(isbn.equals("")) {
             String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                     + "0123456789"
@@ -152,6 +138,8 @@ public class AddBook extends AppCompatActivity {
 
             isbn = sb.toString();
         }
+
+         */
 
         // checks if book exists
         // if book exists, adds user as an owner
@@ -176,9 +164,9 @@ public class AddBook extends AppCompatActivity {
                             List<String> user = new ArrayList<String>();
                             user.add(username);
                             Map<String, Object> book = new HashMap<>();
-                            book.put("author", author);
+                            book.put("author", currAuthor);
                             book.put("owner", user);
-                            book.put("title", title);
+                            book.put("title", currTitle);
                             book.put("isbn", isbn);
                             book.put("url", url);
 //                            book.put("isOnline", isOnline);
@@ -308,8 +296,9 @@ public class AddBook extends AppCompatActivity {
         result[0] = title;
         result[1] = author;
 
-        mTitle.setText(title);
-        mAuthor.setText(author);
+        currTitle = title;
+        currAuthor = author;
+        currISBN = isbn;
         mISBN.setText(isbn);
     }
 
@@ -320,6 +309,8 @@ public class AddBook extends AppCompatActivity {
         integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
         integrator.setPrompt("Scan your book's barcode");
         integrator.initiateScan();
+        isPdf = false;
+
     }
 
     // test functionality with camera to scan book, automatically add, add ability to confirm infromation is correct first
@@ -329,13 +320,9 @@ public class AddBook extends AppCompatActivity {
     }
 
     public void clearPage() {
-        mTitle.setText("");
-        mAuthor.setText("");
         mISBN.setText("");
         mURL.setText("");
-        if(isPdf) {
-            mPdf.setChecked(false);
-        }
+        isPdf = true;
     }
 
     public void goHome() {
@@ -369,9 +356,4 @@ public class AddBook extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void fillFromIsbn(View view) {
-        isbn = mISBN.getText().toString();
-        getBookInfo(isbn);
-
-    }
 }

@@ -17,123 +17,72 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="171dp"
-        android:layout_marginTop="48dp"
-        android:layout_marginEnd="181dp"
+        android:layout_marginTop="28dp"
         android:text="Add Book"
+
         android:textColor="@color/goatWhite"
         android:textSize="36sp"
-
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.447"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/bookTitle_editText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:ems="10"
-        android:hint="title"
-        android:inputType="textPersonName"
-        android:textColor="@color/goatWhite"
-        android:textColorHighlight="@color/goatGrey_opaque"
-        android:textColorHint="@color/goatWhite_opaque"
-        android:textColorLink="@color/goatRed"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
-    <EditText
-        android:id="@+id/bookAuthor_editText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:ems="10"
-        android:hint="author name"
-        android:inputType="textPersonName"
-        android:textColor="@color/goatWhite"
-        android:textColorHighlight="@color/goatGrey_opaque"
-        android:textColorHint="@color/goatWhite_opaque"
-        android:textColorLink="@color/goatRed"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bookTitle_editText" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.107" />
 
     <EditText
         android:id="@+id/bookISBN_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:ems="10"
-        android:hint="ISBN (optional)"
+        android:hint="ISBN "
         android:inputType="textPersonName"
         android:textColor="@color/goatWhite"
         android:textColorHighlight="@color/goatGrey_opaque"
         android:textColorHint="@color/goatWhite_opaque"
         android:textColorLink="@color/goatRed"
         android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bookAuthor_editText" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintVertical_bias="0.136" />
 
     <EditText
         android:id="@+id/url_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="84dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
-        android:hint="URL (optional)"
+        android:hint="URL "
         android:inputType="textPersonName"
         android:textColor="@color/goatWhite"
         android:textColorHighlight="@color/goatGrey_opaque"
         android:textColorHint="@color/goatWhite_opaque"
         android:textColorLink="@color/goatRed"
         android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bookAuthor_editText" />
+        app:layout_constraintTop_toBottomOf="@+id/bookISBN_editText"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/addBook_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:background="@color/goatRed"
 
         android:elevation="20dp"
         android:onClick="addBook"
         android:text="Add Book"
         android:textColor="@color/goatWhite"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/isPdf_online" />
-
-    <Button
-        android:id="@+id/fillFromIsbn_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@color/goatRed"
-        android:elevation="20dp"
-
-        android:onClick="fillFromIsbn"
-        android:text="Fill From ISBN"
-        android:textColor="@color/goatWhite"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scanBarcode_button"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/url_editText"
+        app:layout_constraintVertical_bias="0.113" />
 
     <Button
         android:id="@+id/scanBarcode_button"
@@ -146,23 +95,12 @@
         android:text="Scan Barcode"
 
         android:textColor="@color/goatWhite"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addBook_button" />
-
-    <CheckBox
-        android:id="@+id/isPdf_online"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:elevation="20dp"
-
-        android:text="is a PDF"
-        android:textColor="@color/goatWhite"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/url_editText" />
+        app:layout_constraintTop_toBottomOf="@+id/addBook_button"
+        app:layout_constraintVertical_bias="0.03" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
