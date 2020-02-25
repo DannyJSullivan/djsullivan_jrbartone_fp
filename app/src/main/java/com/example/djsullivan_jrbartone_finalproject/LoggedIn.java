@@ -77,6 +77,11 @@ public class LoggedIn extends AppCompatActivity {
                     {
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                         case KeyEvent.KEYCODE_ENTER:
+                            for (Map.Entry entry: highlightedItems.entrySet()){
+                                if(entry.getValue().equals(true)){
+                                    return true;
+                                }
+                            }
                             searchBookNoClick();
                             return true;
                         default:
@@ -128,7 +133,6 @@ public class LoggedIn extends AppCompatActivity {
     }
 
     public void searchBookNoClick() {
-        Toast.makeText(LoggedIn.this, "search",Toast.LENGTH_SHORT).show();
         bookNameField = findViewById(R.id.bookSearch_plainText);
         bookName = bookNameField.getText().toString();
         cleanTable(results);
@@ -136,6 +140,8 @@ public class LoggedIn extends AppCompatActivity {
     }
 
     public void bookQuery(String bookName, Context context) {
+        findViewById(R.id.send).setVisibility(View.INVISIBLE);
+
         db.collection("books")
                 .orderBy("title")
                 .get()
@@ -151,13 +157,14 @@ public class LoggedIn extends AppCompatActivity {
                                     TextView tv = new TextView(context);
                                     tv.setText(padAndTrim(document.getString("title")));
                                     tv.setTextSize(20);
+                                    tv.setTextColor(0xFFFFFFFF);
                                     tbrow.addView(tv);
                                     tbrow.setClickable(true);
                                     int currColor = tv.getCurrentTextColor();
                                     tbrow.setOnClickListener(new View.OnClickListener() {
                                         public void onClick(View v) {
-                                            if(tv.getCurrentTextColor()==0xFFFFFFFF){
-                                                tbrow.setBackground(new ColorDrawable(0xC2C0C0));
+                                            if(tv.getCurrentTextColor()==0xFFEF233C){
+                                                tbrow.setBackground(new ColorDrawable(0xEF233C));
                                                 tv.setTextColor(currColor);
                                                 highlightedItems.put(document.getId(),false);
                                                 for (Map.Entry entry: highlightedItems.entrySet()){
@@ -171,8 +178,8 @@ public class LoggedIn extends AppCompatActivity {
 
                                             }
                                             else {
-                                                tbrow.setBackground(new ColorDrawable(0xFFff6d59));
-                                                tv.setTextColor(0xFFFFFFFF);
+                                                tbrow.setBackground(new ColorDrawable(0xFFFFFFFF));
+                                                tv.setTextColor(0xFFEF233C);
                                                 findViewById(R.id.send).setVisibility(View.VISIBLE);
                                                 highlightedItems.put(document.getId(),true);
                                                 Log.d("HILI", "HIHI");
@@ -254,6 +261,9 @@ public class LoggedIn extends AppCompatActivity {
     public void createRequest(View view) {
         Map<String, Object> obj = new HashMap<>();
         for(String isbn: highlightedItems.keySet()) {
+            if(!highlightedItems.get(isbn)){
+                continue;
+            }
             db.collection("books").document(isbn).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -285,11 +295,13 @@ public class LoggedIn extends AppCompatActivity {
                                 System.out.println("ISBN IN OBJ!!!! --> " + obj.get("isbn"));
                                 System.out.println("ISBN IN REQUEST!!!! --> " + isbn);
                             }
+                            highlightedItems.put(isbn,false);
                             Toast.makeText(getApplicationContext(), "Request(s) sent!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
             });
         }
+        searchBookNoClick();
     }
 }
