@@ -130,6 +130,7 @@ public class MyProfile extends AppCompatActivity {
                                     TableRow.LayoutParams trlp = new TableRow.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                                     tbrow.setLayoutParams(trlp);
                                     TextView tv = new TextView(context);
+                                    tv.setTextColor(0xFFFFFFFF);
                                     tv.setText(padAndTrim(document.getString("title")));
                                     tv.setTextSize(20);
                                     tv.setLayoutParams(new TableRow.LayoutParams(
@@ -156,6 +157,24 @@ public class MyProfile extends AppCompatActivity {
                                         tbrow.addView(link);
                                         ((TableRow.MarginLayoutParams) link.getLayoutParams()).rightMargin = 16;
                                     }
+
+                                    else{
+                                        ImageButton link = new ImageButton(context);
+                                        link.setImageDrawable(getResources().getDrawable(R.drawable.ic_email_black_24dp));
+                                        link.setBackground(new ColorDrawable(0x00000000));
+                                        link.setOnClickListener(new View.OnClickListener() {
+                                            public void onClick(View v) {
+                                                url = document.get("url").toString();
+                                                System.out.println("ON CLICK SET FOR --> " + url);
+                                                Intent intent = new Intent();
+                                                intent.setAction(Intent.ACTION_VIEW);
+                                                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                                                intent.setData(Uri.parse(url));
+                                                startActivity(intent);
+                                            }
+                                        });
+                                        tbrow.addView(link);
+                                    }
                                     results.addView(tbrow);
                                 }
                             }
@@ -168,7 +187,7 @@ public class MyProfile extends AppCompatActivity {
     }
 
     public String padAndTrim(String s){
-        int len = 41;
+        int len = 35;
         s = "  " + s;
         if(s.length() > len){
             s = s.substring(0,len - 3) + "...";

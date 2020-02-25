@@ -233,9 +233,10 @@ public class BookRequest extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                             DocumentSnapshot doc = task.getResult();
-
-                                            if(doc.get("isPdf").toString().equals("true")) {
-                                                isPdf = true;
+                                            if(doc.get("isPdf") != null) {
+                                                if (doc.get("isPdf").toString().equals("true")) {
+                                                    isPdf = true;
+                                                }
                                             }
 
                                             title = doc.get("title").toString();
