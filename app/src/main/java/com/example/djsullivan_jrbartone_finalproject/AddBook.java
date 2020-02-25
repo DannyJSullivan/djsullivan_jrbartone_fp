@@ -58,7 +58,7 @@ public class AddBook extends AppCompatActivity {
     String username;
     String isbn;
 
-    boolean isOnline;
+//    boolean isOnline;
     boolean isPdf;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -74,7 +74,7 @@ public class AddBook extends AppCompatActivity {
         mTitle = findViewById(R.id.bookTitle_editText);
         mISBN = findViewById(R.id.bookISBN_editText);
         mURL = findViewById(R.id.url_editText);
-        mOnline = findViewById(R.id.isOnline_checkbox);
+//        mOnline = findViewById(R.id.isOnline_checkbox);
         mPdf = findViewById(R.id.isPdf_online);
 
         Bundle bundle = getIntent().getExtras();
@@ -126,7 +126,7 @@ public class AddBook extends AppCompatActivity {
         String title = mTitle.getText().toString();
         isbn = mISBN.getText().toString();
         String url = mURL.getText().toString();
-        isOnline = mOnline.isChecked();
+//        isOnline = mOnline.isChecked();
         isPdf = mPdf.isChecked();
 
         boolean requiredFieldsFilled = false;
@@ -177,10 +177,10 @@ public class AddBook extends AppCompatActivity {
                             book.put("title", title);
                             book.put("isbn", isbn);
                             book.put("url", url);
-                            book.put("isOnline", isOnline);
+//                            book.put("isOnline", isOnline);
                             book.put("isPdf", isPdf);
 
-                            if((isPdf || isOnline) && !url.equals("")) {
+                            if(isPdf && !url.equals("")) {
                                 db.collection("books")
                                         .document(isbn)
                                         .set(book);
@@ -331,9 +331,6 @@ public class AddBook extends AppCompatActivity {
         mURL.setText("");
         if(isPdf) {
             mPdf.setChecked(false);
-        }
-        if(isOnline) {
-            mOnline.setChecked(false);
         }
     }
 

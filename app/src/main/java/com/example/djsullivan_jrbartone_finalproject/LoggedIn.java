@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -44,6 +45,8 @@ public class LoggedIn extends AppCompatActivity {
     private ActionBar actionBar;
 
     String username;
+
+    boolean isPdf = false;
 
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
@@ -250,10 +253,7 @@ public class LoggedIn extends AppCompatActivity {
     // TODO: check and see transaction between users already exists, if it does, append a new ending to it (i.e. _1 or &1) upwards until doc doesn't exist and can be added
     public void createRequest(View view) {
         Map<String, Object> obj = new HashMap<>();
-
         for(String isbn: highlightedItems.keySet()) {
-            obj.put("isbn", isbn);
-
             db.collection("books").document(isbn).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -261,19 +261,35 @@ public class LoggedIn extends AppCompatActivity {
                     if(task.isSuccessful()) {
                         String strOwners = document.get("owner").toString();
                         String[] cleaned = strOwners.replace("[", "").replace("]", "").replace(" ", "").split(",");
+                        obj.put("isbn", isbn);
 
-                        for(int i = 0; i < cleaned.length; i++) {
-                            if(username != cleaned[i]) {
-                                db.collection("requests")
-                                        .document(username + "_" + cleaned[i])
-                                        .set(obj);
+                        if(document.get("isPdf") != null) {
+                            if(document.get("isPdf").toString().equals("true")) {
+                                isPdf = true;
                             }
+                        }
+
+                        // if it's a pdf
+                        if(isPdf) {
+                            db.collection("books")
+                                    .document(isbn)
+                                    .update("owner", FieldValue.arrayUnion(username));
+                            Toast.makeText(getApplicationContext(), "Book is either online or a PDF. You now have access!", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            for(int i = 0; i < cleaned.length; i++) {
+                                db.collection("requests")
+                                        .document(username + "_" + cleaned[i] + "&" + isbn)
+                                        .set(obj);
+
+                                System.out.println("ISBN IN OBJ!!!! --> " + obj.get("isbn"));
+                                System.out.println("ISBN IN REQUEST!!!! --> " + isbn);
+                            }
+                            Toast.makeText(getApplicationContext(), "Request(s) sent!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
             });
         }
-
-        Toast.makeText(getApplicationContext(), "Request(s) sent!", Toast.LENGTH_SHORT).show();
     }
 }

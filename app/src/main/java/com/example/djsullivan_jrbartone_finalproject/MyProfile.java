@@ -48,7 +48,6 @@ public class MyProfile extends AppCompatActivity {
     private ActionBar actionBar;
     String username;
     String url;
-    boolean isOnline = false;
     boolean isPdf = false;
 
     private DrawerLayout dl;
@@ -118,15 +117,11 @@ public class MyProfile extends AppCompatActivity {
                         if(task.isSuccessful()) {
                             for(QueryDocumentSnapshot document: task.getResult()) {
                                 if(document.get("owner").toString().contains(username)) { // add filter here to exclude books owned by you
-                                    if(document.get("isPdf") != null && document.get("isOnline") != null && document.get("url") != null) {
-                                        System.out.println("NOT NULL FOR --> " + document.get("title").toString());
+                                    if(document.get("isPdf") != null && document.get("url") != null) {
                                         if(document.get("isPdf").toString().equals("true")) {
                                             isPdf = true;
                                             url = document.get("url").toString();
-                                        }
-                                        if(document.get("isOnline").toString().equals("true")) {
-                                            isOnline = true;
-                                            url = document.get("url").toString();
+                                            System.out.println("URL IS --> " + url);
                                         }
                                     }
 
@@ -142,21 +137,25 @@ public class MyProfile extends AppCompatActivity {
                                             TableRow.LayoutParams.MATCH_PARENT, 0.9f));
                                     tbrow.addView(tv);
 
-                                    //TODO: only have link appear for results with links
-                                    ImageButton link = new ImageButton(context);
-                                    link.setImageDrawable(getResources().getDrawable(R.drawable.ic_menu_share));
-                                    link.setBackground(new ColorDrawable(0x00000000));
-                                    link.setOnClickListener(new View.OnClickListener() {
-                                        public void onClick(View v) {
-                                            Intent intent = new Intent();
-                                            intent.setAction(Intent.ACTION_VIEW);
-                                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                                            intent.setData(Uri.parse(url));
-                                            startActivity(intent);
-                                        }
-                                    });
-                                    tbrow.addView(link);
-                                    ((TableRow.MarginLayoutParams) link.getLayoutParams()).rightMargin = 16;
+                                    if(isPdf) {
+                                        System.out.println("URL DURING CREATION!!! --> " + url);
+                                        ImageButton link = new ImageButton(context);
+                                        link.setImageDrawable(getResources().getDrawable(R.drawable.ic_menu_share));
+                                        link.setBackground(new ColorDrawable(0x00000000));
+                                        link.setOnClickListener(new View.OnClickListener() {
+                                            public void onClick(View v) {
+                                                url = document.get("url").toString();
+                                                System.out.println("ON CLICK SET FOR --> " + url);
+                                                Intent intent = new Intent();
+                                                intent.setAction(Intent.ACTION_VIEW);
+                                                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                                                intent.setData(Uri.parse(url));
+                                                startActivity(intent);
+                                            }
+                                        });
+                                        tbrow.addView(link);
+                                        ((TableRow.MarginLayoutParams) link.getLayoutParams()).rightMargin = 16;
+                                    }
                                     results.addView(tbrow);
                                 }
                             }

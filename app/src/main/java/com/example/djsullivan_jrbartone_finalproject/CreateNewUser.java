@@ -36,7 +36,7 @@ public class CreateNewUser extends AppCompatActivity {
 
     private ActionBar actionBar;
 
-    // TODO: SET DOCID TO USERNAME
+    //TODO: secureley store & compare passwords
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

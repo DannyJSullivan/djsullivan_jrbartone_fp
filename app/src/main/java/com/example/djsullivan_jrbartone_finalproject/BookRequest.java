@@ -39,6 +39,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+//TODO: add email functionality upon request accepted
+
 public class BookRequest extends AppCompatActivity {
 
     TableLayout sentRequests, incomingRequests;
@@ -56,7 +58,6 @@ public class BookRequest extends AppCompatActivity {
     String userTo = "";
 
     boolean isPdf = false;
-    boolean isOnline = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,7 +128,7 @@ public class BookRequest extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 if (document.getId().contains(username + "_")) {
                                     userFrom = username;
-                                    userTo = document.getId().substring(document.getId().indexOf("_") + 1);
+                                    userTo = document.getId().substring(document.getId().indexOf("_") + 1, document.getId().indexOf("&"));
                                     System.out.println("USER FROM AND TO!!!!!!!!!! --> " + userFrom + " " + userTo);
                                     isbn = document.get("isbn").toString();
                                     db.collection("books").document(isbn).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -137,9 +138,9 @@ public class BookRequest extends AppCompatActivity {
                                             if(!doc.get("owner").toString().contains(username)) {
                                                 title = doc.get("title").toString();
                                                 requestsFrom.add(document.get("isbn").toString());
-                                                System.out.println("REQUESTS SENT!!! --> " + document.getId());
+                                                System.out.println("REQUESTS SENT!!!!!! --> " + document.getId());
                                                 userFrom = username;
-                                                userTo = document.getId().substring(document.getId().indexOf("_") + 1);
+                                                userTo = document.getId().substring(document.getId().indexOf("_") + 1, document.getId().indexOf("&"));
                                                 TableRow tbrow = new TableRow(context);
                                                 TextView tv = new TextView(context);
                                                 System.out.println("NAMES!!!!! --> " + "TO: " + userTo + "FROM: " + userFrom);
@@ -147,7 +148,28 @@ public class BookRequest extends AppCompatActivity {
                                                 line = padAndTrim(line);
                                                 tv.setText(line);
                                                 tv.setTextSize(20);
+
+                                                ImageButton deny = new ImageButton(context);
+                                                deny.setImageDrawable(getResources().getDrawable(R.drawable.ic_close_black_24dp));
+                                                deny.setBackground(new ColorDrawable(0x00000000));
+
+                                                tv.setLayoutParams(new TableRow.LayoutParams(
+                                                        TableRow.LayoutParams.MATCH_PARENT,
+                                                        TableRow.LayoutParams.MATCH_PARENT, 0.8f));
+
+                                                deny.setOnClickListener(new View.OnClickListener() {
+                                                    public void onClick(View v) {
+                                                        Toast.makeText(BookRequest.this, "Req Denied",Toast.LENGTH_SHORT).show();
+                                                        View row = (View) v.getParent();
+                                                        db.collection("requests").document(document.getId()).delete();
+                                                        ViewGroup container = ((ViewGroup)row.getParent());
+                                                        container.removeView(row);
+                                                        container.invalidate();
+                                                    }
+                                                });
+
                                                 tbrow.addView(tv);
+                                                tbrow.addView(deny);
                                                 tbrow.setClickable(true);
                                                 sent.addView(tbrow);
                                             }
@@ -171,9 +193,10 @@ public class BookRequest extends AppCompatActivity {
                                     deny.setImageDrawable(getResources().getDrawable(R.drawable.ic_close_black_24dp));
                                     accept.setBackground(new ColorDrawable(0x00000000));
                                     deny.setBackground(new ColorDrawable(0x00000000));
-                                    //TODO: ONCLICK FOR ACCEPT AND DENY
+
                                     accept.setOnClickListener(new View.OnClickListener() {
                                         public void onClick(View v) {
+                                            // add user as owner on request accepted
                                             Toast.makeText(BookRequest.this, "Req Accepted",Toast.LENGTH_SHORT).show();
                                             View row = (View) v.getParent();
                                             ViewGroup container = ((ViewGroup)row.getParent());
@@ -182,8 +205,8 @@ public class BookRequest extends AppCompatActivity {
                                                     .document(isbn)
                                                     .update("owner", FieldValue.arrayUnion(userFrom));
 
-                                            // TODO: if isPdf or isOnline, do not remove ownership, else move ownership
-                                            if(!isOnline && !isPdf) {
+                                            // if not a pdf, remove ownership
+                                            if(!isPdf) {
                                                 System.out.println("Book is not pdf and is not online. Transferring ownership!");
                                                 db.collection("books")
                                                         .document(isbn)
@@ -213,9 +236,6 @@ public class BookRequest extends AppCompatActivity {
 
                                             if(doc.get("isPdf").toString().equals("true")) {
                                                 isPdf = true;
-                                            }
-                                            if(doc.get("isOnline").toString().equals("true")) {
-                                                isOnline = true;
                                             }
 
                                             title = doc.get("title").toString();

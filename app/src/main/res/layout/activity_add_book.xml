@@ -103,14 +103,14 @@
         android:id="@+id/addBook_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="180dp"
+        android:layout_marginTop="52dp"
         android:onClick="addBook"
         android:text="Add Book"
         android:textColor="#000000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bookISBN_editText" />
+        app:layout_constraintTop_toBottomOf="@+id/url_editText" />
 
     <Button
         android:id="@+id/scanBarcode_button"
@@ -126,31 +126,17 @@
         app:layout_constraintTop_toBottomOf="@+id/addBook_button" />
 
     <CheckBox
-        android:id="@+id/isOnline_checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:text="is online"
-        android:textColor="@color/goatWhite"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/url_editText"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <CheckBox
         android:id="@+id/isPdf_online"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginBottom="10dp"
         android:text="is a PDF"
         android:textColor="@color/goatWhite"
         app:layout_constraintBottom_toTopOf="@+id/addBook_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/isOnline_checkbox"
-        app:layout_constraintVertical_bias="0.25" />
+        app:layout_constraintTop_toBottomOf="@+id/url_editText"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
