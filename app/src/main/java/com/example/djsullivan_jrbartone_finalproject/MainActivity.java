@@ -25,6 +25,7 @@ import java.util.HashMap;
 
 // TODO: add logout function to hamburger menu
 // TODO: make app icon goatbooks logo
+// TODO: fix login logic to actually compare elements
 
 public class MainActivity extends AppCompatActivity {
     EditText usernameField;
@@ -102,9 +103,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // TODO: fix login logic to actually compare elements
     public void userAuth(String username, String password) {
         HashMap<String, Object> users = new HashMap<>();
-        // TODO: fix login logic to actually compare elements
         db.collection("users")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
