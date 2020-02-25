@@ -63,6 +63,7 @@ public class AddBook extends AppCompatActivity {
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    //TODO: set listener so that if either pdf or online are checked, updated URL to required/omit optional
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,8 +87,6 @@ public class AddBook extends AppCompatActivity {
         t.syncState();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
 
         nv = (NavigationView)findViewById(R.id.nv);
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -181,13 +180,16 @@ public class AddBook extends AppCompatActivity {
                             book.put("isOnline", isOnline);
                             book.put("isPdf", isPdf);
 
-
-                            db.collection("books")
-                                    .document(isbn)
-                                    .set(book);
-
-                            Toast.makeText(getApplicationContext(), "Book added!", Toast.LENGTH_SHORT).show();
-                            clearPage();
+                            if((isPdf || isOnline) && !url.equals("")) {
+                                db.collection("books")
+                                        .document(isbn)
+                                        .set(book);
+                                Toast.makeText(getApplicationContext(), "Book added!", Toast.LENGTH_SHORT).show();
+                                clearPage();
+                            }
+                            else {
+                                Toast.makeText(getApplicationContext(), "If is online or is PDF, URL must be included!", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     } else {
                         Toast.makeText(getApplicationContext(), "Error! Book not added!", Toast.LENGTH_SHORT).show();

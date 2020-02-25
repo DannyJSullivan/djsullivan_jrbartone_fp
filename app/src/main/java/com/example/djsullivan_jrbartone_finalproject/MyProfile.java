@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -33,6 +34,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -44,6 +47,9 @@ public class MyProfile extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private ActionBar actionBar;
     String username;
+    String url;
+    boolean isOnline = false;
+    boolean isPdf = false;
 
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
@@ -102,8 +108,6 @@ public class MyProfile extends AppCompatActivity {
         startActivity(intent);
     }
 
-
-    //TODO: EXCLUDE BOOKS OWNED BY YOU
     public void initTable(Context context) {
         db.collection("books")
                 .orderBy("title")
@@ -114,6 +118,18 @@ public class MyProfile extends AppCompatActivity {
                         if(task.isSuccessful()) {
                             for(QueryDocumentSnapshot document: task.getResult()) {
                                 if(document.get("owner").toString().contains(username)) { // add filter here to exclude books owned by you
+                                    if(document.get("isPdf") != null && document.get("isOnline") != null && document.get("url") != null) {
+                                        System.out.println("NOT NULL FOR --> " + document.get("title").toString());
+                                        if(document.get("isPdf").toString().equals("true")) {
+                                            isPdf = true;
+                                            url = document.get("url").toString();
+                                        }
+                                        if(document.get("isOnline").toString().equals("true")) {
+                                            isOnline = true;
+                                            url = document.get("url").toString();
+                                        }
+                                    }
+
                                     Log.d("SUCCESS", document.getId() + " => " + document.getData());
                                     TableRow tbrow = new TableRow(context);
                                     TableRow.LayoutParams trlp = new TableRow.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -125,18 +141,22 @@ public class MyProfile extends AppCompatActivity {
                                             TableRow.LayoutParams.MATCH_PARENT,
                                             TableRow.LayoutParams.MATCH_PARENT, 0.9f));
                                     tbrow.addView(tv);
+
+                                    //TODO: only have link appear for results with links
                                     ImageButton link = new ImageButton(context);
                                     link.setImageDrawable(getResources().getDrawable(R.drawable.ic_menu_share));
                                     link.setBackground(new ColorDrawable(0x00000000));
                                     link.setOnClickListener(new View.OnClickListener() {
                                         public void onClick(View v) {
-                                            Toast.makeText(MyProfile.this, "Book link",Toast.LENGTH_SHORT).show();
+                                            Intent intent = new Intent();
+                                            intent.setAction(Intent.ACTION_VIEW);
+                                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                                            intent.setData(Uri.parse(url));
+                                            startActivity(intent);
                                         }
                                     });
-
                                     tbrow.addView(link);
                                     ((TableRow.MarginLayoutParams) link.getLayoutParams()).rightMargin = 16;
-
                                     results.addView(tbrow);
                                 }
                             }
@@ -157,8 +177,6 @@ public class MyProfile extends AppCompatActivity {
         return s;
     }
 
-
-
     public void requests() {
         Intent intent = new Intent(MyProfile.this, BookRequest.class);
         intent.putExtra("username", username);
@@ -178,7 +196,6 @@ public class MyProfile extends AppCompatActivity {
         }
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle, if it returns
@@ -189,5 +206,13 @@ public class MyProfile extends AppCompatActivity {
         // Handle your other action bar items...
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void goToLink(String url) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setData(Uri.parse(url));
+        startActivity(intent);
     }
 }
