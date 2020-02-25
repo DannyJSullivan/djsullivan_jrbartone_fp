@@ -188,7 +188,7 @@ public class MyProfile extends AppCompatActivity {
     }
 
     public String padAndTrim(String s){
-        int len = 35;
+        int len = 30;
         s = "  " + s;
         if(s.length() > len){
             s = s.substring(0,len - 3) + "...";
