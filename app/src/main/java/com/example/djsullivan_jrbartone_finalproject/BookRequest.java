@@ -163,7 +163,7 @@ public class BookRequest extends AppCompatActivity {
                                                         container.invalidate();
                                                     }
                                                 });
-
+                                                tv.setTextColor(0xFFFFFFFF);
                                                 tbrow.addView(tv);
                                                 tbrow.addView(deny);
                                                 tbrow.setClickable(true);
@@ -181,6 +181,7 @@ public class BookRequest extends AppCompatActivity {
                                     System.out.println("REQUESTS SENT!!! --> " + document.getId());
                                     TableRow tbrow = new TableRow(context);
                                     TextView tv = new TextView(context);
+                                    tv.setTextColor(0xFFFFFFFF);
                                     //TableLayout.LayoutParams tableRowParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT);
                                     //tbrow.setLayoutParams(tableRowParams);
                                     ImageButton accept = new ImageButton(context);
@@ -241,6 +242,7 @@ public class BookRequest extends AppCompatActivity {
                                             line = padAndTrim(line);
                                             tv.setText(line);
                                             tv.setTextSize(20);
+                                            tv.setTextColor(0xFFFFFFFF);
                                             tv.setLayoutParams(new TableRow.LayoutParams(
                                                     TableRow.LayoutParams.MATCH_PARENT,
                                                     TableRow.LayoutParams.MATCH_PARENT, 0.8f));
@@ -261,8 +263,7 @@ public class BookRequest extends AppCompatActivity {
     }
 
     public String padAndTrim(String s){
-        s = " " + s;
-        int len = 35;
+        int len = 30;
         if(s.length() > len){
             s = s.substring(0,len - 3) + "...";
         }
