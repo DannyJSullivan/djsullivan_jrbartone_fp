@@ -21,12 +21,6 @@
         android:textColor="#FFFFFF"
         android:icon="@drawable/ic_menu_send"
         />
-
-    <item android:id="@+id/settings"
-        android:title="Settings"
-        android:textColor="#FFFFFF"
-        android:icon="@drawable/ic_menu_manage"
-        />
     <item android:id="@+id/logout"
         android:title="Logout"
         android:textColor="#FFFFFF"

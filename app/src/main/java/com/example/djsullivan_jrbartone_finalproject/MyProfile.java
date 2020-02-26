@@ -81,17 +81,14 @@ public class MyProfile extends AppCompatActivity {
                 {
                     case R.id.home:
                         goHome();
-                        Toast.makeText(MyProfile.this, "Home",Toast.LENGTH_SHORT).show();break;
-                    case R.id.settings:
-                        Toast.makeText(MyProfile.this, "Settings",Toast.LENGTH_SHORT).show();break;
+                    case R.id.logout:
+                        logout();
                     case R.id.profile:
-                        Toast.makeText(MyProfile.this, "Profile",Toast.LENGTH_SHORT).show();break;
+                        break;
                     case R.id.add:
                         addBookNoClick();
-                        Toast.makeText(MyProfile.this, "Add",Toast.LENGTH_SHORT).show();break;
                     case R.id.req:
                         requests();
-                        Toast.makeText(MyProfile.this, "Trade",Toast.LENGTH_SHORT).show();break;
                     default:
                         return true;
                 }
@@ -206,6 +203,11 @@ public class MyProfile extends AppCompatActivity {
         Intent intent = new Intent(MyProfile.this, AddBook.class);
         intent.putExtra("username", username);
         startActivity(intent);
+    }
+    public void logout() {
+        Intent intent = new Intent(MyProfile.this, MainActivity.class);
+        startActivity(intent);
+
     }
 
     private void cleanTable(TableLayout table) {

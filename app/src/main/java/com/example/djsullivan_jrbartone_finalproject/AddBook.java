@@ -95,17 +95,14 @@ public class AddBook extends AppCompatActivity {
                 {
                     case R.id.home:
                         goHome();
-                        Toast.makeText(AddBook.this, "Home",Toast.LENGTH_SHORT).show();break;
-                    case R.id.settings:
-                        Toast.makeText(AddBook.this, "Settings",Toast.LENGTH_SHORT).show();break;
+                    case R.id.logout:
+                        logout();
                     case R.id.profile:
                         myProfile();
-                        Toast.makeText(AddBook.this, "Profile",Toast.LENGTH_SHORT).show();break;
                     case R.id.add:
-                        Toast.makeText(AddBook.this, "Add",Toast.LENGTH_SHORT).show();break;
+                        break;
                     case R.id.req:
                         requests();
-                        Toast.makeText(AddBook.this, "Trade",Toast.LENGTH_SHORT).show();break;
                     default:
                         return true;
                 }
@@ -341,6 +338,11 @@ public class AddBook extends AppCompatActivity {
     public void requests() {
         Intent intent = new Intent(AddBook.this, BookRequest.class);
         intent.putExtra("username", username);
+        startActivity(intent);
+    }
+
+    public void logout() {
+        Intent intent = new Intent(AddBook.this, MainActivity.class);
         startActivity(intent);
     }
 

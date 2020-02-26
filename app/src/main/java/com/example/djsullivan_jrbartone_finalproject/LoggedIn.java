@@ -106,18 +106,15 @@ public class LoggedIn extends AppCompatActivity {
                 switch(id)
                 {
                     case R.id.home:
-                        Toast.makeText(LoggedIn.this, "Home",Toast.LENGTH_SHORT).show();break;
-                    case R.id.settings:
-                        Toast.makeText(LoggedIn.this, "Settings",Toast.LENGTH_SHORT).show();break;
+                        break;
+                    case R.id.logout:
+                        logout();
                     case R.id.profile:
                         myProfile();
-                        Toast.makeText(LoggedIn.this, "Profile",Toast.LENGTH_SHORT).show();break;
                     case R.id.add:
                         addBookNoClick();
-                        Toast.makeText(LoggedIn.this, "Add",Toast.LENGTH_SHORT).show();break;
                     case R.id.req:
                         requests();
-                        Toast.makeText(LoggedIn.this, "Trade",Toast.LENGTH_SHORT).show();break;
                     default:
                         return true;
                 }
@@ -230,6 +227,11 @@ public class LoggedIn extends AppCompatActivity {
     public void addBookNoClick() {
         Intent intent = new Intent(LoggedIn.this, AddBook.class);
         intent.putExtra("username", username);
+        startActivity(intent);
+    }
+
+    public void logout() {
+        Intent intent = new Intent(LoggedIn.this, MainActivity.class);
         startActivity(intent);
     }
 
