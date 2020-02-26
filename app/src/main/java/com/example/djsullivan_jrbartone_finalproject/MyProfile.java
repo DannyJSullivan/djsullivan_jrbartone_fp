@@ -30,6 +30,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.FirebaseAppLifecycleListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -50,8 +51,9 @@ public class MyProfile extends AppCompatActivity {
     String url;
     String email;
     String isbn;
+    String title;
+    String userTo;
     boolean isPdf = false;
-    boolean reqAccepted = false;
 
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
@@ -155,8 +157,7 @@ public class MyProfile extends AppCompatActivity {
                                         tbrow.addView(link);
                                         ((TableRow.MarginLayoutParams) link.getLayoutParams()).rightMargin = 16;
                                     }
-
-                                    else{
+                                    else {
                                         isbn = document.get("isbn").toString();
                                         System.out.println("ISBN!!!!!!! --> " + isbn);
                                         ImageButton link = new ImageButton(context);
@@ -164,8 +165,6 @@ public class MyProfile extends AppCompatActivity {
                                         link.setBackground(new ColorDrawable(0x00000000));
                                         link.setOnClickListener(new View.OnClickListener() {
                                             public void onClick(View v) {
-                                                // TODO: if reqAccepted, link to email
-                                                //          else send toast not
                                                 db.collection("acceptedRequests")
                                                         .document(username + "&" + isbn)
                                                         .get()
@@ -173,34 +172,62 @@ public class MyProfile extends AppCompatActivity {
                                                             @Override
                                                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                                 if(task.isSuccessful()) {
-                                                                    isbn = document.getId();
-                                                                    System.out.println(isbn);
-                                                                    System.out.println("REQUESTED!!!!!!!! --> " + username + "&" + isbn);
+                                                                    if(task.getResult().get("requestedBy") != null) {
+                                                                        DocumentSnapshot doc = task.getResult();
+                                                                        String requestedBy = doc.get("requestedBy").toString();
+                                                                        userTo = requestedBy;
 
-                                                                    System.out.println("DIS DE RESULT!!! --> " + task.getResult());
-                                                                    if(task.getResult().get("requestedBy") == null) {
-                                                                        System.out.println("IT's NULLLLLLLLLLLL!!!");
-                                                                        Toast.makeText(getApplicationContext(), "Request has not been accepted for this book!", Toast.LENGTH_SHORT).show();
-                                                                    }
-                                                                    else {
-                                                                        String requestedBy = task.getResult().get("requestedBy").toString();
+                                                                        isbn = document.getId();
+                                                                        title = isbn;
 
-                                                                        // get email from user that requested book and open email instance
+                                                                        // get the title of the book for the email
+                                                                        db.collection("books")
+                                                                                .document(isbn)
+                                                                                .get()
+                                                                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                                                    @Override
+                                                                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                                        DocumentSnapshot doc = task.getResult();
+                                                                                        title = doc.get("title").toString();
+                                                                                    }
+                                                                                });
+
+                                                                        // send an email to the user who's request for the book was accepted
                                                                         db.collection("users")
                                                                                 .document(requestedBy)
                                                                                 .get()
                                                                                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                                                     @Override
                                                                                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                                                        email = document.get("email").toString();
+                                                                                        // remove the accepted request
+                                                                                        db.collection("acceptedRequests")
+                                                                                                .document(username + "&" + isbn)
+                                                                                                .delete();
+
+                                                                                        // remove the user as owner of the book
+                                                                                        db.collection("books")
+                                                                                                .document(isbn)
+                                                                                                .update("owner", FieldValue.arrayRemove(username));
+
+                                                                                        // add the requesting user as owner of the book
+                                                                                        db.collection("books")
+                                                                                                .document(isbn)
+                                                                                                .update("owner", FieldValue.arrayUnion(userTo));
+
+                                                                                        DocumentSnapshot doc = task.getResult();
+                                                                                        email = doc.get("email").toString();
                                                                                         System.out.println("ON CLICK SET FOR --> " + email);
                                                                                         Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                                                                                                 "mailto",email, null));
                                                                                         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Goat Books Exchange");
-                                                                                        emailIntent.putExtra(Intent.EXTRA_TEXT, "Looking to exchange " + isbn + " with you!");
+                                                                                        emailIntent.putExtra(Intent.EXTRA_TEXT, "Looking to exchange " + title + " with you!");
                                                                                         startActivity(Intent.createChooser(emailIntent, "Send email..."));
                                                                                     }
                                                                                 });
+                                                                    }
+                                                                    // if book does not have active accepted requests, email intent will not be created, user will be notified
+                                                                    else {
+                                                                        Toast.makeText(getApplicationContext(), "Request has not been accepted for this book!", Toast.LENGTH_SHORT).show();
                                                                     }
                                                                 }
                                                                 else {
@@ -208,20 +235,6 @@ public class MyProfile extends AppCompatActivity {
                                                                 }
                                                             }
                                                         });
-//                                                if(reqAccepted) {
-//
-//
-//                                                    url = document.get("url").toString();
-//                                                    System.out.println("ON CLICK SET FOR --> " + url);
-//                                                    Intent intent = new Intent();
-//                                                    intent.setAction(Intent.ACTION_VIEW);
-//                                                    intent.addCategory(Intent.CATEGORY_BROWSABLE);
-//                                                    intent.setData(Uri.parse(url));
-//                                                    startActivity(intent);
-//                                                }
-//                                                else {
-//                                                    Toast.makeText(getApplicationContext(), "Request has not been accepted for this book!", Toast.LENGTH_SHORT).show();
-//                                                }
                                             }
                                         });
                                         tbrow.addView(link);

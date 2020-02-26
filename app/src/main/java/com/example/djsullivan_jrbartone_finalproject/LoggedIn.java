@@ -281,13 +281,14 @@ public class LoggedIn extends AppCompatActivity {
                             }
                         }
 
-                        // if it's a pdf
+                        // if it's a pdf, add current user as owner
                         if(isPdf) {
                             db.collection("books")
                                     .document(isbn)
                                     .update("owner", FieldValue.arrayUnion(username));
                             Toast.makeText(getApplicationContext(), "Book is either online or a PDF. You now have access!", Toast.LENGTH_SHORT).show();
                         }
+                        // otherwise, send out a request for the book to all owners
                         else {
                             for(int i = 0; i < cleaned.length; i++) {
                                 db.collection("requests")

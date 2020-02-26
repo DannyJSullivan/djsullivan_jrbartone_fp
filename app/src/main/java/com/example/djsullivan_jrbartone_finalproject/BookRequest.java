@@ -200,85 +200,24 @@ public class BookRequest extends AppCompatActivity {
                                             View row = (View) v.getParent();
                                             ViewGroup container = ((ViewGroup)row.getParent());
                                             userFrom = document.getId().substring(0,document.getId().toString().indexOf("_"));
+                                            String docId = document.getId();
+                                            isbn = docId.substring(docId.indexOf("&") + 1);
 
-                                            db.collection("books")
-                                                    .document(isbn)
-                                                    .get()
-                                                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                            //TODO: gets the last isbn on the page, WTF????
-                                                            if(task.getResult().get("isPdf") != null && task.getResult().get("isPdf").toString().equals("true")) {
-                                                                isPdf = true;
-                                                                db.collection("books")
-                                                                        .document(isbn)
-                                                                        .update("owner", FieldValue.arrayUnion(userFrom));
-                                                            }
-                                                            else {
-                                                                isPdf = false;
-                                                                // if not a pdf, remove ownership
-                                                                System.out.println("Book is not pdf and is not online. Transferring ownership!");
+                                            // if it's a pdf, do nothing
+                                            if(document.get("isPdf") != null && document.get("isPdf").toString().equals("true")) {
+                                                isPdf = true;
 
-                                                                System.out.println("ISBN!!! --> " + task.getResult().getId());
-                                                                System.out.println("title!!! --> " + task.getResult().get("title"));
+                                            }
+                                            // if it's a physical book
+                                            else {
+                                                isPdf = false;
 
-
-                                                                db.collection("books")
-                                                                        .document(isbn)
-                                                                        .update("owner", FieldValue.arrayRemove(userTo));
-
-                                                                HashMap<String, String> requestedBy = new HashMap<>();
-                                                                requestedBy.put("requestedBy", userFrom);
-
-                                                                System.out.println("DOES IT GET HERE????");
-                                                                System.out.println("This is the request???? --> " + username + "&" + isbn);
-
-                                                                db.collection("acceptedRequests")
-                                                                        .document(username + "&" + isbn)
-                                                                        .set(requestedBy)
-                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                            @Override
-                                                                            public void onSuccess(Void aVoid) {
-                                                                                if(task.isSuccessful()) {
-                                                                                    System.out.println("IT SHOULD HAVE ADDED THE REQUEST");
-                                                                                }
-                                                                                else {
-                                                                                    System.out.println("DEFINITELY DIDN'T ADD THE REQUEST");
-                                                                                }
-                                                                            }
-                                                                        });
-
-                                                                // TODO: this should be updated after the user is contacted?
-                                                                db.collection("books")
-                                                                        .document(isbn)
-                                                                        .update("owner", FieldValue.arrayUnion(userFrom));
-                                                            }
-                                                        }
-                                                    });
-
-                                            // TODO: this should be updated after the user is contacted?
-//                                            db.collection("books")
-//                                                    .document(isbn)
-//                                                    .update("owner", FieldValue.arrayUnion(userFrom));
-
-//                                            // if not a pdf, remove ownership
-//                                            if(!isPdf) {
-//                                                System.out.println("Book is not pdf and is not online. Transferring ownership!");
-//                                                db.collection("books")
-//                                                        .document(isbn)
-//                                                        .update("owner", FieldValue.arrayRemove(userTo));
-//
-//                                                HashMap<String, String> requestedBy = new HashMap<>();
-//                                                requestedBy.put("requestedBy", userFrom);
-//
-//                                                db.collection("acceptedRequests")
-//                                                        .document(username + "&" + isbn)
-//                                                        .set(requestedBy);
-//                                            }
-
-                                            db.collection("requests").document(document.getId()).delete();
-                                            container.removeView(row);
-                                            container.invalidate();
+                                                HashMap<String, String> requestedBy = new HashMap<>();
+                                                requestedBy.put("requestedBy", userFrom);
+                                                db.collection("acceptedRequests")
+                                                        .document(username + "&" + isbn)
+                                                        .set(requestedBy);
+                                            }
                                         }
                                     });
                                     deny.setOnClickListener(new View.OnClickListener() {
