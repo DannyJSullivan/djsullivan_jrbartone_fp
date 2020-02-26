@@ -62,6 +62,7 @@ public class AddBook extends AppCompatActivity {
 //    boolean isOnline;
     boolean isPdf = true;
 
+    //TODO: figure out logic (i.e. tried to scan book and it didnt work)
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // TODO: set listener so that if pdf is checked, updated URL to required/omit optional

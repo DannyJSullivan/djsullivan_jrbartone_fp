@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -35,6 +36,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.model.Document;
 
 import java.security.spec.ECField;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +128,7 @@ public class BookRequest extends AppCompatActivity {
                                     userFrom = username;
                                     userTo = document.getId().substring(document.getId().indexOf("_") + 1, document.getId().indexOf("&"));
                                     System.out.println("USER FROM AND TO!!!!!!!!!! --> " + userFrom + " " + userTo);
-                                    isbn = document.get("isbn").toString();
+//                                    isbn = document.get("isbn").toString();
                                     db.collection("books").document(isbn).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -198,17 +200,82 @@ public class BookRequest extends AppCompatActivity {
                                             View row = (View) v.getParent();
                                             ViewGroup container = ((ViewGroup)row.getParent());
                                             userFrom = document.getId().substring(0,document.getId().toString().indexOf("_"));
+
                                             db.collection("books")
                                                     .document(isbn)
-                                                    .update("owner", FieldValue.arrayUnion(userFrom));
+                                                    .get()
+                                                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                            //TODO: gets the last isbn on the page, WTF????
+                                                            if(task.getResult().get("isPdf") != null && task.getResult().get("isPdf").toString().equals("true")) {
+                                                                isPdf = true;
+                                                                db.collection("books")
+                                                                        .document(isbn)
+                                                                        .update("owner", FieldValue.arrayUnion(userFrom));
+                                                            }
+                                                            else {
+                                                                isPdf = false;
+                                                                // if not a pdf, remove ownership
+                                                                System.out.println("Book is not pdf and is not online. Transferring ownership!");
 
-                                            // if not a pdf, remove ownership
-                                            if(!isPdf) {
-                                                System.out.println("Book is not pdf and is not online. Transferring ownership!");
-                                                db.collection("books")
-                                                        .document(isbn)
-                                                        .update("owner", FieldValue.arrayRemove(userTo));
-                                            }
+                                                                System.out.println("ISBN!!! --> " + task.getResult().getId());
+                                                                System.out.println("title!!! --> " + task.getResult().get("title"));
+
+
+                                                                db.collection("books")
+                                                                        .document(isbn)
+                                                                        .update("owner", FieldValue.arrayRemove(userTo));
+
+                                                                HashMap<String, String> requestedBy = new HashMap<>();
+                                                                requestedBy.put("requestedBy", userFrom);
+
+                                                                System.out.println("DOES IT GET HERE????");
+                                                                System.out.println("This is the request???? --> " + username + "&" + isbn);
+
+                                                                db.collection("acceptedRequests")
+                                                                        .document(username + "&" + isbn)
+                                                                        .set(requestedBy)
+                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                            @Override
+                                                                            public void onSuccess(Void aVoid) {
+                                                                                if(task.isSuccessful()) {
+                                                                                    System.out.println("IT SHOULD HAVE ADDED THE REQUEST");
+                                                                                }
+                                                                                else {
+                                                                                    System.out.println("DEFINITELY DIDN'T ADD THE REQUEST");
+                                                                                }
+                                                                            }
+                                                                        });
+
+                                                                // TODO: this should be updated after the user is contacted?
+                                                                db.collection("books")
+                                                                        .document(isbn)
+                                                                        .update("owner", FieldValue.arrayUnion(userFrom));
+                                                            }
+                                                        }
+                                                    });
+
+                                            // TODO: this should be updated after the user is contacted?
+//                                            db.collection("books")
+//                                                    .document(isbn)
+//                                                    .update("owner", FieldValue.arrayUnion(userFrom));
+
+//                                            // if not a pdf, remove ownership
+//                                            if(!isPdf) {
+//                                                System.out.println("Book is not pdf and is not online. Transferring ownership!");
+//                                                db.collection("books")
+//                                                        .document(isbn)
+//                                                        .update("owner", FieldValue.arrayRemove(userTo));
+//
+//                                                HashMap<String, String> requestedBy = new HashMap<>();
+//                                                requestedBy.put("requestedBy", userFrom);
+//
+//                                                db.collection("acceptedRequests")
+//                                                        .document(username + "&" + isbn)
+//                                                        .set(requestedBy);
+//                                            }
+
                                             db.collection("requests").document(document.getId()).delete();
                                             container.removeView(row);
                                             container.invalidate();

@@ -48,7 +48,10 @@ public class MyProfile extends AppCompatActivity {
     private ActionBar actionBar;
     String username;
     String url;
+    String email;
+    String isbn;
     boolean isPdf = false;
+    boolean reqAccepted = false;
 
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
@@ -119,7 +122,6 @@ public class MyProfile extends AppCompatActivity {
                                         if(document.get("isPdf").toString().equals("true")) {
                                             isPdf = true;
                                             url = document.get("url").toString();
-                                            System.out.println("URL IS --> " + url);
                                         }
                                     }
 
@@ -137,14 +139,12 @@ public class MyProfile extends AppCompatActivity {
                                     tbrow.addView(tv);
 
                                     if(isPdf) {
-                                        System.out.println("URL DURING CREATION!!! --> " + url);
                                         ImageButton link = new ImageButton(context);
                                         link.setImageDrawable(getResources().getDrawable(R.drawable.ic_menu_share));
                                         link.setBackground(new ColorDrawable(0x00000000));
                                         link.setOnClickListener(new View.OnClickListener() {
                                             public void onClick(View v) {
                                                 url = document.get("url").toString();
-                                                System.out.println("ON CLICK SET FOR --> " + url);
                                                 Intent intent = new Intent();
                                                 intent.setAction(Intent.ACTION_VIEW);
                                                 intent.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -157,18 +157,71 @@ public class MyProfile extends AppCompatActivity {
                                     }
 
                                     else{
+                                        isbn = document.get("isbn").toString();
+                                        System.out.println("ISBN!!!!!!! --> " + isbn);
                                         ImageButton link = new ImageButton(context);
                                         link.setImageDrawable(getResources().getDrawable(R.drawable.ic_email_black_24dp));
                                         link.setBackground(new ColorDrawable(0x00000000));
                                         link.setOnClickListener(new View.OnClickListener() {
                                             public void onClick(View v) {
-                                                url = document.get("url").toString();
-                                                System.out.println("ON CLICK SET FOR --> " + url);
-                                                Intent intent = new Intent();
-                                                intent.setAction(Intent.ACTION_VIEW);
-                                                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                                                intent.setData(Uri.parse(url));
-                                                startActivity(intent);
+                                                // TODO: if reqAccepted, link to email
+                                                //          else send toast not
+                                                db.collection("acceptedRequests")
+                                                        .document(username + "&" + isbn)
+                                                        .get()
+                                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                if(task.isSuccessful()) {
+                                                                    isbn = document.getId();
+                                                                    System.out.println(isbn);
+                                                                    System.out.println("REQUESTED!!!!!!!! --> " + username + "&" + isbn);
+
+                                                                    System.out.println("DIS DE RESULT!!! --> " + task.getResult());
+                                                                    if(task.getResult().get("requestedBy") == null) {
+                                                                        System.out.println("IT's NULLLLLLLLLLLL!!!");
+                                                                        Toast.makeText(getApplicationContext(), "Request has not been accepted for this book!", Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                    else {
+                                                                        String requestedBy = task.getResult().get("requestedBy").toString();
+
+                                                                        // get email from user that requested book and open email instance
+                                                                        db.collection("users")
+                                                                                .document(requestedBy)
+                                                                                .get()
+                                                                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                                                    @Override
+                                                                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                                        email = document.get("email").toString();
+                                                                                        System.out.println("ON CLICK SET FOR --> " + email);
+                                                                                        Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                                                                                                "mailto",email, null));
+                                                                                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Goat Books Exchange");
+                                                                                        emailIntent.putExtra(Intent.EXTRA_TEXT, "Looking to exchange " + isbn + " with you!");
+                                                                                        startActivity(Intent.createChooser(emailIntent, "Send email..."));
+                                                                                    }
+                                                                                });
+                                                                    }
+                                                                }
+                                                                else {
+                                                                    Toast.makeText(getApplicationContext(), "Request has not been accepted for this book!", Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            }
+                                                        });
+//                                                if(reqAccepted) {
+//
+//
+//                                                    url = document.get("url").toString();
+//                                                    System.out.println("ON CLICK SET FOR --> " + url);
+//                                                    Intent intent = new Intent();
+//                                                    intent.setAction(Intent.ACTION_VIEW);
+//                                                    intent.addCategory(Intent.CATEGORY_BROWSABLE);
+//                                                    intent.setData(Uri.parse(url));
+//                                                    startActivity(intent);
+//                                                }
+//                                                else {
+//                                                    Toast.makeText(getApplicationContext(), "Request has not been accepted for this book!", Toast.LENGTH_SHORT).show();
+//                                                }
                                             }
                                         });
                                         tbrow.addView(link);

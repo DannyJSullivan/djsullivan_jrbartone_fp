@@ -23,9 +23,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 
-// TODO: add logout function to hamburger menu
 // TODO: make app icon goatbooks logo
 // TODO: fix login logic to actually compare elements
+// TODO: delete all history on logout so you can't go back
+// TODO: FIGURE OUT WHAT'S UP WITH THE NAV MENU?????
 
 public class MainActivity extends AppCompatActivity {
     EditText usernameField;
