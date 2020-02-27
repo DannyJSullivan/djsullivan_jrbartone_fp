@@ -107,14 +107,18 @@ public class LoggedIn extends AppCompatActivity {
                 {
                     case R.id.home:
                         break;
-                    case R.id.logout:
-                        logout();
                     case R.id.profile:
                         myProfile();
+                        break;
                     case R.id.add:
                         addBookNoClick();
+                        break;
                     case R.id.req:
                         requests();
+                        break;
+                    case R.id.logout:
+                        logout();
+                        break;
                     default:
                         return true;
                 }

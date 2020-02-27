@@ -41,7 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-//TODO: add email functionality upon request accepted
+//TODO: WHY DOES ADMIN BOOK REQUEST CRASH??
 
 public class BookRequest extends AppCompatActivity {
 
@@ -89,13 +89,17 @@ public class BookRequest extends AppCompatActivity {
                 {
                     case R.id.home:
                         goHome();
-                    case R.id.logout:
-                        logout();
+                        break;
                     case R.id.profile:
                         myProfile();
+                        break;
                     case R.id.add:
                         addBookNoClick();
+                        break;
                     case R.id.req:
+                        break;
+                    case R.id.logout:
+                        logout();
                         break;
                     default:
                         return true;
@@ -132,44 +136,50 @@ public class BookRequest extends AppCompatActivity {
                                     db.collection("books").document(isbn).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                            DocumentSnapshot doc = task.getResult();
-                                            if(!doc.get("owner").toString().contains(username)) {
-                                                title = doc.get("title").toString();
-                                                requestsFrom.add(document.get("isbn").toString());
-                                                System.out.println("REQUESTS SENT!!!!!! --> " + document.getId());
-                                                userFrom = username;
-                                                userTo = document.getId().substring(document.getId().indexOf("_") + 1, document.getId().indexOf("&"));
-                                                TableRow tbrow = new TableRow(context);
-                                                TextView tv = new TextView(context);
-                                                System.out.println("NAMES!!!!! --> " + "TO: " + userTo + "FROM: " + userFrom);
-                                                String line = "Asking " + userTo + " for " + title;
-                                                line = padAndTrim(line);
-                                                tv.setText(line);
-                                                tv.setTextSize(20);
+                                            if(task.isSuccessful()) {
+                                                DocumentSnapshot doc = task.getResult();
+                                                if(!doc.get("owner").toString().contains(username)) {
+                                                    title = doc.get("title").toString();
+                                                    requestsFrom.add(document.get("isbn").toString());
+                                                    System.out.println("REQUESTS SENT!!!!!! --> " + document.getId());
+                                                    userFrom = username;
+                                                    userTo = document.getId().substring(document.getId().indexOf("_") + 1, document.getId().indexOf("&"));
+                                                    TableRow tbrow = new TableRow(context);
+                                                    TextView tv = new TextView(context);
+                                                    System.out.println("NAMES!!!!! --> " + "TO: " + userTo + "FROM: " + userFrom);
+                                                    String line = "Asking " + userTo + " for " + title;
+                                                    line = padAndTrim(line);
+                                                    tv.setText(line);
+                                                    tv.setTextSize(20);
 
-                                                ImageButton deny = new ImageButton(context);
-                                                deny.setImageDrawable(getResources().getDrawable(R.drawable.ic_close_black_24dp));
-                                                deny.setBackground(new ColorDrawable(0x00000000));
+                                                    ImageButton deny = new ImageButton(context);
+                                                    deny.setImageDrawable(getResources().getDrawable(R.drawable.ic_close_black_24dp));
+                                                    deny.setBackground(new ColorDrawable(0x00000000));
 
-                                                tv.setLayoutParams(new TableRow.LayoutParams(
-                                                        TableRow.LayoutParams.MATCH_PARENT,
-                                                        TableRow.LayoutParams.MATCH_PARENT, 0.8f));
+                                                    tv.setLayoutParams(new TableRow.LayoutParams(
+                                                            TableRow.LayoutParams.MATCH_PARENT,
+                                                            TableRow.LayoutParams.MATCH_PARENT, 0.8f));
 
-                                                deny.setOnClickListener(new View.OnClickListener() {
-                                                    public void onClick(View v) {
-                                                        Toast.makeText(BookRequest.this, "Req Denied",Toast.LENGTH_SHORT).show();
-                                                        View row = (View) v.getParent();
-                                                        db.collection("requests").document(document.getId()).delete();
-                                                        ViewGroup container = ((ViewGroup)row.getParent());
-                                                        container.removeView(row);
-                                                        container.invalidate();
-                                                    }
-                                                });
-                                                tv.setTextColor(0xFFFFFFFF);
-                                                tbrow.addView(tv);
-                                                tbrow.addView(deny);
-                                                tbrow.setClickable(true);
-                                                sent.addView(tbrow);
+                                                    deny.setOnClickListener(new View.OnClickListener() {
+                                                        public void onClick(View v) {
+                                                            Toast.makeText(BookRequest.this, "Req Denied",Toast.LENGTH_SHORT).show();
+                                                            View row = (View) v.getParent();
+                                                            db.collection("requests").document(document.getId()).delete();
+                                                            ViewGroup container = ((ViewGroup)row.getParent());
+                                                            container.removeView(row);
+                                                            container.invalidate();
+                                                        }
+                                                    });
+                                                    tv.setTextColor(0xFFFFFFFF);
+                                                    tbrow.addView(tv);
+                                                    tbrow.addView(deny);
+                                                    tbrow.setClickable(true);
+                                                    sent.addView(tbrow);
+                                                }
+
+                                            }
+                                            else {
+                                                System.out.println("OOPS! BOOK THING FAILED!");
                                             }
                                         }
                                     });
@@ -209,13 +219,60 @@ public class BookRequest extends AppCompatActivity {
                                                 isPdf = true;
 
                                             }
-                                            // if it's a physical book, delete the request, add new accepted request
+                                            // if it's a physical book, delete all requests to other users for book, add new accepted request
                                             else {
                                                 isPdf = false;
 
                                                 db.collection("requests")
                                                         .document(userFrom + "_" + userTo + "&" + isbn)
                                                         .delete();
+
+                                                db.collection("requests")
+                                                        .get()
+                                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                                try {
+                                                                    List<DocumentSnapshot> snapshots = task.getResult().getDocuments();
+                                                                    for(DocumentSnapshot doc: snapshots) {
+                                                                        String id = doc.getId();
+                                                                        String userFromSub = id.substring(0, id.indexOf("_"));
+                                                                        String isbnFromSub = id.substring(id.indexOf("&") + 1);
+
+                                                                        System.out.println("ID!!!!! --> " + id);
+
+                                                                        System.out.println("USERFROM!!! --> " + userFrom);
+                                                                        System.out.println("REQUEST USERFROM!!! --> " + userFromSub);
+
+                                                                        System.out.println("ISBN!!! --> " + isbn);
+                                                                        System.out.println("REQUEST ISBN!!! --> " + isbnFromSub);
+
+                                                                        if(userFrom.equals(userFromSub)) {
+                                                                            System.out.println(userFrom + " is equal to " + userFromSub);
+                                                                        }
+                                                                        else {
+                                                                            System.out.println(userFrom + " is not equal to " + userFromSub);
+                                                                        }
+
+                                                                        if(isbn.equals(isbnFromSub)) {
+                                                                            System.out.println(isbn + " is equal to " + isbnFromSub);
+                                                                        }
+                                                                        else {
+                                                                            System.out.println(isbn + " is not equal to " + isbnFromSub);
+                                                                        }
+
+                                                                        if(userFromSub.equals(userFrom) && isbnFromSub.equals(isbn)) {
+                                                                            db.collection("requests")
+                                                                                    .document(id)
+                                                                                    .delete();
+                                                                        }
+                                                                    }
+                                                                }
+                                                                catch(NullPointerException e) {
+                                                                    System.out.println("NULL POINTER EXCEPTION, NO DOCS IN REQUESTS QUERY");
+                                                                }
+                                                            }
+                                                        });
 
                                                 HashMap<String, String> requestedBy = new HashMap<>();
                                                 requestedBy.put("requestedBy", userFrom);

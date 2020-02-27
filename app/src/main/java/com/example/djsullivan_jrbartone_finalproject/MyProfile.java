@@ -86,14 +86,18 @@ public class MyProfile extends AppCompatActivity {
                 {
                     case R.id.home:
                         goHome();
-                    case R.id.logout:
-                        logout();
+                        break;
                     case R.id.profile:
                         break;
                     case R.id.add:
                         addBookNoClick();
+                        break;
                     case R.id.req:
                         requests();
+                        break;
+                    case R.id.logout:
+                        logout();
+                        break;
                     default:
                         return true;
                 }

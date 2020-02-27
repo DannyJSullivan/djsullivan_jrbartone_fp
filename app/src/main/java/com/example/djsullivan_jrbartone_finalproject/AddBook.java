@@ -90,14 +90,18 @@ public class AddBook extends AppCompatActivity {
                 {
                     case R.id.home:
                         goHome();
-                    case R.id.logout:
-                        logout();
+                        break;
                     case R.id.profile:
                         myProfile();
+                        break;
                     case R.id.add:
                         break;
                     case R.id.req:
                         requests();
+                        break;
+                    case R.id.logout:
+                        logout();
+                        break;
                     default:
                         return true;
                 }

@@ -52,10 +52,11 @@ public class CreateNewUser extends AppCompatActivity {
 
     boolean userExists = false;
 
-    public void addUser(String username, String password) {
+    public void addUser(String username, String password, String email) {
         Map<String, Object> user = new HashMap<>();
         user.put("username", username.toLowerCase());
         user.put("password", password);
+        user.put("email", email);
 
         // first check to see if user exists
         db.collection("users").document(username).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -87,6 +88,7 @@ public class CreateNewUser extends AppCompatActivity {
         mUsername.setText("");
         mPassword.setText("");
         mPassword2.setText("");
+        mEmail.setText("");
     }
 
 
@@ -94,13 +96,20 @@ public class CreateNewUser extends AppCompatActivity {
         mUsername = findViewById(R.id.createAccount_username);
         mPassword = findViewById(R.id.createAccount_password);
         mPassword2 = findViewById(R.id.createAccount_password2);
+        mEmail = findViewById(R.id.createAccount_email);
 
         String username = mUsername.getText().toString().toLowerCase();
         String password = mPassword.getText().toString();
         String password2 = mPassword2.getText().toString();
+        String email = mEmail.getText().toString();
 
         if(password.equals(password2)) {
-            addUser(username, password);
+            if(!username.equals("") && !password.equals("") && !email.equals("")) {
+                addUser(username, password, email);
+            }
+            else {
+                Toast.makeText(getApplicationContext(), "Please fill all fields!", Toast.LENGTH_SHORT).show();
+            }
         }
         else {
             Toast.makeText(getApplicationContext(), "Passwords do not match! Try again!", Toast.LENGTH_SHORT).show();

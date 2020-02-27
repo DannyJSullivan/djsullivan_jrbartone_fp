@@ -17,19 +17,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firestore.v1.Document;
 
 import java.util.HashMap;
 
 // TODO: make app icon goatbooks logo
-// TODO: fix login logic to actually compare elements
 // TODO: delete all history on logout so you can't go back
-// TODO: FIGURE OUT WHAT'S UP WITH THE NAV MENU?????
 // TODO: can we put notification on book with accepted request?
 // TODO: how to remove row from my books when email is "sent"
-// TODO: if password incorrect, clear the field
+// TODO: check and see if accepted request is working
 
 public class MainActivity extends AppCompatActivity {
     EditText usernameField;
@@ -107,35 +107,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // TODO: fix login logic to actually compare elements
     public void userAuth(String username, String password) {
-        HashMap<String, Object> users = new HashMap<>();
         db.collection("users")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         boolean userExists = false;
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                //                                Log.d("Success!", document.getId() + " => " + document.getData());
-                                users.put(document.getId(), document.getData());
-                                if (document.getData().toString().contains("username=" + username) && document.getData().toString().contains("password=" + password)) {
+                        if(task.isSuccessful()) {
+                            QuerySnapshot document = task.getResult();
+                            for(DocumentSnapshot doc : document.getDocuments()) {
+                                if(doc.getId().equals(username) && doc.get("password").equals(password)) {
                                     userExists = true;
+                                    Toast.makeText(getApplicationContext(), "Login successful!", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(MainActivity.this, LoggedIn.class);
+                                    intent.putExtra("username", username);
+                                    startActivity(intent);
                                 }
                             }
-                        } else {
-                            Log.w("ERROR! Users not got!", "Error getting documents.", task.getException());
+                            if(!userExists) {
+                                Toast.makeText(getApplicationContext(), "Login failed! Username or password incorrect!", Toast.LENGTH_SHORT).show();
+                            }
                         }
-
-                        if (userExists) {
-                            Toast.makeText(getApplicationContext(), "Login successful!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(MainActivity.this, LoggedIn.class);
-                            intent.putExtra("username", username);
-                            startActivity(intent);
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Login failed!", Toast.LENGTH_SHORT).show();
-                            clearPassword();
+                        else {
+                            Toast.makeText(getApplicationContext(), "Login failed! Username or password incorrect!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
