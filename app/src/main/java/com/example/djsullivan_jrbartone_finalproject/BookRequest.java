@@ -132,7 +132,9 @@ public class BookRequest extends AppCompatActivity {
                                     userFrom = username;
                                     userTo = document.getId().substring(document.getId().indexOf("_") + 1, document.getId().indexOf("&"));
                                     System.out.println("USER FROM AND TO!!!!!!!!!! --> " + userFrom + " " + userTo);
-//                                    isbn = document.get("isbn").toString();
+                                    isbn = document.get("isbn").toString();
+                                    System.out.println("ISBN!!!!! --> " + isbn);
+
                                     db.collection("books").document(isbn).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
