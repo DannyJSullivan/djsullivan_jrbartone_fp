@@ -273,7 +273,6 @@ public class MyProfile extends AppCompatActivity {
     public void logout() {
         Intent intent = new Intent(MyProfile.this, MainActivity.class);
         startActivity(intent);
-
     }
 
     private void cleanTable(TableLayout table) {

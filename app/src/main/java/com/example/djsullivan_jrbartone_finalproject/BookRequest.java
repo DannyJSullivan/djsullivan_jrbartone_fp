@@ -200,6 +200,7 @@ public class BookRequest extends AppCompatActivity {
                                             View row = (View) v.getParent();
                                             ViewGroup container = ((ViewGroup)row.getParent());
                                             userFrom = document.getId().substring(0,document.getId().toString().indexOf("_"));
+                                            userTo = username;
                                             String docId = document.getId();
                                             isbn = docId.substring(docId.indexOf("&") + 1);
 
@@ -208,9 +209,13 @@ public class BookRequest extends AppCompatActivity {
                                                 isPdf = true;
 
                                             }
-                                            // if it's a physical book
+                                            // if it's a physical book, delete the request, add new accepted request
                                             else {
                                                 isPdf = false;
+
+                                                db.collection("requests")
+                                                        .document(userFrom + "_" + userTo + "&" + isbn)
+                                                        .delete();
 
                                                 HashMap<String, String> requestedBy = new HashMap<>();
                                                 requestedBy.put("requestedBy", userFrom);
@@ -218,6 +223,8 @@ public class BookRequest extends AppCompatActivity {
                                                         .document(username + "&" + isbn)
                                                         .set(requestedBy);
                                             }
+                                            container.removeView(row);
+                                            container.invalidate();
                                         }
                                     });
                                     deny.setOnClickListener(new View.OnClickListener() {

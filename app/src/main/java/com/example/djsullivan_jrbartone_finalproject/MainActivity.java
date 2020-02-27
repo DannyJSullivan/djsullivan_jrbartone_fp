@@ -27,6 +27,7 @@ import java.util.HashMap;
 // TODO: fix login logic to actually compare elements
 // TODO: delete all history on logout so you can't go back
 // TODO: FIGURE OUT WHAT'S UP WITH THE NAV MENU?????
+// TODO: can we put notification on book with accepted request?
 
 public class MainActivity extends AppCompatActivity {
     EditText usernameField;
