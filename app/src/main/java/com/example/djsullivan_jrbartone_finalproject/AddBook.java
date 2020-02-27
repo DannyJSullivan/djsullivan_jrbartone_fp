@@ -62,14 +62,8 @@ public class AddBook extends AppCompatActivity {
 //    boolean isOnline;
     boolean isPdf = true;
 
-    //TODO: figure out logic (i.e. tried to scan book and it didnt work)
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    // TODO: set listener so that if pdf is checked, updated URL to required/omit optional
-    // TODO: set listener so that if a link is inserted, isPdf gets checked
-    // TODO: set listener so that if text field is empty or has been deleted, make the variable null string
-    //          comes from the error of deleting authors, then trying to fill from ISBN again
-    //              so on fill ISBN, clear vars
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,9 +112,9 @@ public class AddBook extends AppCompatActivity {
         String url = mURL.getText().toString();
         boolean requiredFieldsFilled = false;
 
-        if(!author.equals("") && !title.equals("") && !isbn.equals("")) {
-            requiredFieldsFilled = true;
-        }
+//        if(!author.equals("") && !title.equals("") && !isbn.equals("")) {
+//            requiredFieldsFilled = true;
+//        }
 
         /*
         if(isbn.equals("")) {
@@ -142,54 +136,50 @@ public class AddBook extends AppCompatActivity {
         // checks if book exists
         // if book exists, adds user as an owner
         // if book does not exist, adds the book
-        // TODO: possibly add book to users in booksOwned field?
-        if(requiredFieldsFilled) {
-            db.collection("books").document(isbn).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            Log.d("SUCCESS", "FOUND THE DOCUMENT!!!!");
-                            db.collection("books")
-                                    .document(isbn)
-                                    .update("owner", FieldValue.arrayUnion(username));
+        db.collection("books").document(isbn).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d("SUCCESS", "FOUND THE DOCUMENT!!!!");
+                        db.collection("books")
+                                .document(isbn)
+                                .update("owner", FieldValue.arrayUnion(username));
 
-                            Toast.makeText(getApplicationContext(), "Book added!", Toast.LENGTH_SHORT).show();
-                            clearPage();
-                        } else {
-                            Log.d("FAILURE", "COULD NOT FIND THE DOCUMENT!!!");
-                            List<String> user = new ArrayList<String>();
-                            user.add(username);
-                            Map<String, Object> book = new HashMap<>();
-                            book.put("author", currAuthor);
-                            book.put("owner", user);
-                            book.put("title", currTitle);
-                            book.put("isbn", isbn);
-                            book.put("url", url);
-//                            book.put("isOnline", isOnline);
-                            book.put("isPdf", isPdf);
-
-                            if(isPdf && !url.equals("")) {
-                                db.collection("books")
-                                        .document(isbn)
-                                        .set(book);
-                                Toast.makeText(getApplicationContext(), "Book added!", Toast.LENGTH_SHORT).show();
-                                clearPage();
-                            }
-                            else {
-                                Toast.makeText(getApplicationContext(), "If is online or is PDF, URL must be included!", Toast.LENGTH_SHORT).show();
-                            }
-                        }
+                        Toast.makeText(getApplicationContext(), "Book added!", Toast.LENGTH_SHORT).show();
+                        clearPage();
                     } else {
-                        Toast.makeText(getApplicationContext(), "Error! Book not added!", Toast.LENGTH_SHORT).show();
+                        Log.d("NEW BOOK!", "COULD NOT FIND THE EXISTING BOOK!!!");
+                        List<String> user = new ArrayList<String>();
+                        user.add(username);
+                        Map<String, Object> book = new HashMap<>();
+                        book.put("author", currAuthor);
+                        book.put("owner", user);
+                        book.put("title", currTitle);
+                        book.put("isbn", isbn);
+                        book.put("url", url);
+                        if(mURL.getText().toString().equals("")) {
+                            book.put("isPdf", false);
+                        }
+                        else {
+                            book.put("isPdf", true);
+                        }
+
+                        db.collection("books")
+                                .document(isbn)
+                                .set(book);
+
+
+                        Log.d("SUCCESS!", "Book added!");
+                        Toast.makeText(getApplicationContext(), "Book added!", Toast.LENGTH_SHORT).show();
+                        clearPage();
                     }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Error! Book not added!", Toast.LENGTH_SHORT).show();
                 }
-            });
-        }
-        else {
-            Toast.makeText(getApplicationContext(), "Book not added! Please fill all required fields!", Toast.LENGTH_SHORT).show();
-        }
+            }
+        });
     }
 
 

@@ -28,6 +28,8 @@ import java.util.HashMap;
 // TODO: delete all history on logout so you can't go back
 // TODO: FIGURE OUT WHAT'S UP WITH THE NAV MENU?????
 // TODO: can we put notification on book with accepted request?
+// TODO: how to remove row from my books when email is "sent"
+// TODO: if password incorrect, clear the field
 
 public class MainActivity extends AppCompatActivity {
     EditText usernameField;
@@ -133,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(intent);
                         } else {
                             Toast.makeText(getApplicationContext(), "Login failed!", Toast.LENGTH_SHORT).show();
+                            clearPassword();
                         }
                     }
                 });
@@ -145,5 +148,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void clearDb() {
         db.clearPersistence();
+    }
+
+    public void clearPassword() {
+        passwordField.setText("");
     }
 }
