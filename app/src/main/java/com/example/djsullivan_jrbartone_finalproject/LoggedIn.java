@@ -290,7 +290,7 @@ public class LoggedIn extends AppCompatActivity {
                             db.collection("books")
                                     .document(isbn)
                                     .update("owner", FieldValue.arrayUnion(username));
-                            Toast.makeText(getApplicationContext(), "Book is either online or a PDF. You now have access!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Book is a PDF. You now have access!", Toast.LENGTH_SHORT).show();
                         }
                         // otherwise, send out a request for the book to all owners
                         else {

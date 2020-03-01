@@ -169,6 +169,11 @@ public class MyProfile extends AppCompatActivity {
                                         link.setBackground(new ColorDrawable(0x00000000));
                                         link.setOnClickListener(new View.OnClickListener() {
                                             public void onClick(View v) {
+                                                isbn = document.getId();
+//                                                System.out.println("DOCID!!! --> " + document.getId());
+//                                                System.out.println("ISBN!!! --> " + document.get("isbn").toString());
+//                                                System.out.println("GETTING!!! --> " + username + "&" + isbn);
+
                                                 db.collection("acceptedRequests")
                                                         .document(username + "&" + isbn)
                                                         .get()
@@ -176,6 +181,7 @@ public class MyProfile extends AppCompatActivity {
                                                             @Override
                                                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                                 if(task.isSuccessful()) {
+                                                                    System.out.println("RESULT!!! --> " + task.getResult());
                                                                     if(task.getResult().get("requestedBy") != null) {
                                                                         DocumentSnapshot doc = task.getResult();
                                                                         String requestedBy = doc.get("requestedBy").toString();

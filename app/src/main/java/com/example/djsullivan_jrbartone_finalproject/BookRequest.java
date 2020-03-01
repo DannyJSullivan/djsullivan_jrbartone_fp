@@ -162,7 +162,7 @@ public class BookRequest extends AppCompatActivity {
 
                                                     deny.setOnClickListener(new View.OnClickListener() {
                                                         public void onClick(View v) {
-                                                            Toast.makeText(BookRequest.this, "Req Denied",Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(BookRequest.this, "Request denied!",Toast.LENGTH_SHORT).show();
                                                             View row = (View) v.getParent();
                                                             db.collection("requests").document(document.getId()).delete();
                                                             ViewGroup container = ((ViewGroup)row.getParent());
@@ -206,7 +206,7 @@ public class BookRequest extends AppCompatActivity {
                                     accept.setOnClickListener(new View.OnClickListener() {
                                         public void onClick(View v) {
                                             // add user as owner on request accepted
-                                            Toast.makeText(BookRequest.this, "Req Accepted",Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(BookRequest.this, "Request accepted!",Toast.LENGTH_SHORT).show();
                                             View row = (View) v.getParent();
                                             ViewGroup container = ((ViewGroup)row.getParent());
                                             userFrom = document.getId().substring(0,document.getId().toString().indexOf("_"));
@@ -286,7 +286,7 @@ public class BookRequest extends AppCompatActivity {
                                     });
                                     deny.setOnClickListener(new View.OnClickListener() {
                                         public void onClick(View v) {
-                                            Toast.makeText(BookRequest.this, "Req Denied",Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(BookRequest.this, "Request denied!",Toast.LENGTH_SHORT).show();
                                             View row = (View) v.getParent();
                                             db.collection("requests").document(document.getId()).delete();
                                             ViewGroup container = ((ViewGroup)row.getParent());

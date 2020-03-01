@@ -28,7 +28,6 @@ import java.util.HashMap;
 // TODO: make app icon goatbooks logo
 // TODO: can we put notification on book with accepted request?
 // TODO: how to remove row from my books when email is "sent"
-// TODO: check and see if accepted request is working
 
 public class MainActivity extends AppCompatActivity {
     EditText usernameField;
