@@ -41,8 +41,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-//TODO: WHY DOES ADMIN BOOK REQUEST CRASH??
-
 public class BookRequest extends AppCompatActivity {
 
     TableLayout sentRequests, incomingRequests;

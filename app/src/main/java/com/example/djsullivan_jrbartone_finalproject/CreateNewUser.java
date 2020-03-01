@@ -38,7 +38,6 @@ public class CreateNewUser extends AppCompatActivity {
     private ActionBar actionBar;
 
     //TODO: secureley store & compare passwords
-    // TODO: add email field
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

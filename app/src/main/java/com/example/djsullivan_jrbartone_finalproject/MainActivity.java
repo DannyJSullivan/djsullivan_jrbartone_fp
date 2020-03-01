@@ -26,7 +26,6 @@ import com.google.firestore.v1.Document;
 import java.util.HashMap;
 
 // TODO: make app icon goatbooks logo
-// TODO: delete all history on logout so you can't go back
 // TODO: can we put notification on book with accepted request?
 // TODO: how to remove row from my books when email is "sent"
 // TODO: check and see if accepted request is working
@@ -134,6 +133,11 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(getApplicationContext(), "Cannot go back! Please log in.", Toast.LENGTH_SHORT).show();
     }
 
     public void createNewAccount(View view) {
